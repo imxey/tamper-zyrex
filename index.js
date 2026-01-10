@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Sistem Verifikasi & Monitoring (Ultimate Merged Edition)
+// @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition)
 // @namespace    http://asshal.tech/
-// @version      30.0
-// @description  Dashboard + Auto Auth + One Click Sync + Auto Date from AWB History
+// @version      32.0
+// @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons
 // @author       System Admin
 // @match        https://laptop.asshal.tech/form/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js
@@ -189,9 +189,22 @@
         .datepicker table {width: 100% !important;}
         .datepicker.datepicker-dropdown.dropdown-menu {z-index: 9999999999 !important;}
 
-        /* Tombol Gabungan */
-        .btn-custom-approve { background-color: #10ac84 !important; border-color: #10ac84 !important; color: white !important; font-weight: bold !important; margin-left: 15px !important; text-transform: uppercase; }
-        .btn-custom-reject { background-color: #e74c3c !important; border-color: #c0392b !important; color: white !important; font-weight: bold !important; margin-left: 10px !important; text-transform: uppercase; }
+        /* --- STICKY ACTION BAR CSS --- */
+        #sys-action-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2147483647;
+            background: white; border-top: 2px solid #3498db; padding: 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 20px;
+        }
+        .btn-custom-approve, .btn-custom-reject {
+            font-size: 14px !important; font-weight: bold !important; padding: 12px 25px !important; border-radius: 5px !important; cursor: pointer !important; text-transform: uppercase !important; color: white !important; border: none !important;
+        }
+        .btn-custom-approve { background-color: #10ac84 !important; }
+        .btn-custom-approve:hover { background-color: #0e9471 !important; }
+        .btn-custom-reject { background-color: #e74c3c !important; }
+        .btn-custom-reject:hover { background-color: #c0392b !important; }
+
+        /* Padding bawah halaman agar konten tidak tertutup action bar */
+        body { padding-bottom: 80px !important; }
     `);
 
   const footer = document.querySelector(".footer-copyright-area");
@@ -323,78 +336,83 @@
   };
 
   function injectActionButtons() {
+    // Sembunyikan tombol submit asli jika ada
     const buttonContainer = document.querySelector(".login-horizental");
-
     if (buttonContainer) {
       const originalSubmit = buttonContainer.querySelector(
         'button[type="submit"], .btn-login'
       );
-      if (originalSubmit) {
-        originalSubmit.style.display = "none";
-      }
+      if (originalSubmit) originalSubmit.style.display = "none";
+    }
 
-      if (!document.getElementById("sys-btn-approve-main")) {
-        const approveBtn = document.createElement("button");
-        approveBtn.id = "sys-btn-approve-main";
-        approveBtn.type = "button";
-        approveBtn.className =
-          "btn btn-primary waves-effect waves-light btn-custom-approve";
-        approveBtn.innerHTML = '<i class="fa fa-check"></i> SIMPAN & TERIMA';
-        approveBtn.onclick = function (e) {
-          e.preventDefault();
-          const mainForm = document.querySelector("form");
-          if (mainForm && !mainForm.checkValidity()) {
-            mainForm.reportValidity();
-            return;
-          }
-          const autoReason = generateAutoReason();
-          if (autoReason) {
-            alert(
-              "PERINGATAN: Form Evaluasi masih ada item bermasalah:\n\n" +
-                autoReason +
-                "\n\nPerbaiki jadi 'Sesuai' jika ingin Menerima."
-            );
-            return;
-          }
-          if (
-            confirm(
-              `Yakin SIMPAN data ke Asshal dan TERIMA di Zyrex?\n\nNPSN: ${pageData.npsn}`
-            )
-          ) {
-            callApi(this, "approve", null);
-          }
-        };
-        buttonContainer.appendChild(approveBtn);
+    // Buat Sticky Action Bar jika belum ada
+    if (!document.getElementById("sys-action-bar")) {
+      const actionBar = document.createElement("div");
+      actionBar.id = "sys-action-bar";
 
-        const rejectBtn = document.createElement("button");
-        rejectBtn.id = "sys-btn-reject-main";
-        rejectBtn.type = "button";
-        rejectBtn.className =
-          "btn btn-danger waves-effect waves-light btn-custom-reject";
-        rejectBtn.innerHTML = '<i class="fa fa-times"></i> SIMPAN & TOLAK';
-        rejectBtn.onclick = function (e) {
-          e.preventDefault();
-          const mainForm = document.querySelector("form");
-          if (mainForm && !mainForm.checkValidity()) {
-            mainForm.reportValidity();
-            return;
-          }
-          let defaultReason = generateAutoReason();
-          if (!defaultReason) defaultReason = "";
-          const reason = prompt(
-            `Konfirmasi Penolakan:\n(Data akan disimpan ke Asshal & Ditolak di Zyrex)\n\nAlasan:`,
-            defaultReason
+      // Tombol TERIMA
+      const approveBtn = document.createElement("button");
+      approveBtn.id = "sys-btn-approve-main";
+      approveBtn.type = "button";
+      approveBtn.className = "btn-custom-approve"; // Pakai class baru
+      approveBtn.innerHTML = '<i class="fa fa-check"></i> SIMPAN & TERIMA';
+      approveBtn.onclick = function (e) {
+        e.preventDefault();
+        const mainForm = document.querySelector("form");
+        if (mainForm && !mainForm.checkValidity()) {
+          mainForm.reportValidity();
+          return;
+        }
+        const autoReason = generateAutoReason();
+        if (autoReason) {
+          alert(
+            "PERINGATAN: Form Evaluasi masih ada item bermasalah:\n\n" +
+              autoReason +
+              "\n\nPerbaiki jadi 'Sesuai' jika ingin Menerima."
           );
-          if (reason !== null) {
-            if (reason.trim() === "") {
-              alert("Alasan penolakan wajib diisi!");
-            } else {
-              callApi(this, "reject", reason);
-            }
+          return;
+        }
+        if (
+          confirm(
+            `Yakin SIMPAN data ke Asshal dan TERIMA di Zyrex?\n\nNPSN: ${pageData.npsn}`
+          )
+        ) {
+          callApi(this, "approve", null);
+        }
+      };
+      actionBar.appendChild(approveBtn);
+
+      // Tombol TOLAK
+      const rejectBtn = document.createElement("button");
+      rejectBtn.id = "sys-btn-reject-main";
+      rejectBtn.type = "button";
+      rejectBtn.className = "btn-custom-reject"; // Pakai class baru
+      rejectBtn.innerHTML = '<i class="fa fa-times"></i> SIMPAN & TOLAK';
+      rejectBtn.onclick = function (e) {
+        e.preventDefault();
+        const mainForm = document.querySelector("form");
+        if (mainForm && !mainForm.checkValidity()) {
+          mainForm.reportValidity();
+          return;
+        }
+        let defaultReason = generateAutoReason();
+        if (!defaultReason) defaultReason = "";
+        const reason = prompt(
+          `Konfirmasi Penolakan:\n(Data akan disimpan ke Asshal & Ditolak di Zyrex)\n\nAlasan:`,
+          defaultReason
+        );
+        if (reason !== null) {
+          if (reason.trim() === "") {
+            alert("Alasan penolakan wajib diisi!");
+          } else {
+            callApi(this, "reject", reason);
           }
-        };
-        buttonContainer.appendChild(rejectBtn);
-      }
+        }
+      };
+      actionBar.appendChild(rejectBtn);
+
+      // Masukkan Action Bar ke body
+      document.body.appendChild(actionBar);
     }
   }
 
@@ -640,6 +658,15 @@
           }, 100);
         },
       });
+
+      // --- [FITUR BARU] AUTO OPEN VIEWER ---
+      // Memberikan jeda 500ms agar dashboard render sempurna, lalu buka viewer.
+      setTimeout(() => {
+        if (viewerInstance) {
+          viewerInstance.show();
+        }
+      }, 500);
+      // -------------------------------------
     }
   }
 
