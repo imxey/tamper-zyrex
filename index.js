@@ -688,7 +688,7 @@
       );
       if (viewerContainer && viewerInstance) {
         const key = e.key.toLowerCase();
-        const allowedKeys = ["a", "d", "q", "e", "r", "f"];
+        const allowedKeys = ["a", "d", "q", "e", "r", "f", "escape"];
 
         if (allowedKeys.includes(key)) {
           e.preventDefault();
@@ -700,7 +700,34 @@
           if (key === "q") viewerInstance.rotate(-90);
           if (key === "e") viewerInstance.rotate(90);
           if (key === "r") viewerInstance.reset();
-          if (key === "f") viewerInstance.hide();
+          if (key === "f" || key === "escape") viewerInstance.hide();
+        }
+      }
+    },
+    true
+  );
+  const handleMouseNav = (e) => {
+    if (e.button === 3 || e.button === 4) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return true;
+    }
+    return false;
+  };
+
+  document.addEventListener("mouseup", handleMouseNav, true);
+
+  document.addEventListener(
+    "mousedown",
+    function (e) {
+      if (handleMouseNav(e)) {
+        const viewerContainer = document.querySelector(
+          ".viewer-container.viewer-in"
+        );
+        if (viewerContainer && viewerInstance) {
+          if (e.button === 3) viewerInstance.prev();
+          if (e.button === 4) viewerInstance.next();
         }
       }
     },
