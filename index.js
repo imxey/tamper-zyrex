@@ -835,6 +835,66 @@
     setupSyncLogic(rightBox);
   }
 
+  function cascadeDropdownChanges(targetName, value, pageJQuery) {
+    if (targetName === "bc_bapp_sn") {
+      if (value === "Tidak ada" || value === "Tidak terlihat jelas") {
+        const snBox = document.getElementById("box_sn_bapp_input");
+        const snReal = document.getElementById("sn_bapp");
+        if (snBox && snReal) {
+          snBox.value = "-";
+          snReal.value = "-";
+          formState.sn_manual = "-";
+        }
+      }
+    }
+
+    if (targetName === "bapp_hal1" && value === "Tidak ada") {
+      const bcSelect = document.querySelector(
+        'select[data-target="bc_bapp_sn"]'
+      );
+      if (bcSelect) {
+        bcSelect.value = "Tidak ada";
+        formState.dropdowns["bc_bapp_sn"] = "Tidak ada";
+        syncDropdown("bc_bapp_sn", "Tidak ada", pageJQuery);
+      }
+      const snBox = document.getElementById("box_sn_bapp_input");
+      const snReal = document.getElementById("sn_bapp");
+      if (snBox && snReal) {
+        snBox.value = "-";
+        snReal.value = "-";
+        formState.sn_manual = "-";
+      }
+    }
+
+    if (targetName === "bapp_hal2" && value === "Tidak ada") {
+      const ttdSelect = document.querySelector(
+        'select[data-target="nm_ttd_bapp"]'
+      );
+      if (ttdSelect) {
+        ttdSelect.value = "TTD tidak ada";
+        formState.dropdowns["nm_ttd_bapp"] = "TTD tidak ada";
+        syncDropdown("nm_ttd_bapp", "TTD tidak ada", pageJQuery);
+      }
+      const stempelSelect = document.querySelector(
+        'select[data-target="stempel"]'
+      );
+      if (stempelSelect) {
+        stempelSelect.value = "Tidak ada";
+        formState.dropdowns["stempel"] = "Tidak ada";
+        syncDropdown("stempel", "Tidak ada", pageJQuery);
+      }
+      const tglSelect = document.querySelector(
+        'select[data-target="ket_tgl_bapp"]'
+      );
+      if (tglSelect) {
+        tglSelect.value = "Tidak ada";
+        formState.dropdowns["ket_tgl_bapp"] = "Tidak ada";
+        syncDropdown("ket_tgl_bapp", "Tidak ada", pageJQuery);
+        handleDateVisibility("Tidak ada");
+      }
+    }
+  }
+
   function setupSyncLogic(boxElement) {
     const pageJQuery =
       typeof unsafeWindow !== "undefined" && unsafeWindow.jQuery
@@ -853,6 +913,7 @@
         syncDropdown(tName, val, pageJQuery);
         if (tName === "ket_tgl_bapp") handleDateVisibility(val);
         if (tName === "bc_bapp_sn") handleSNLogic(val);
+        cascadeDropdownChanges(tName, val, pageJQuery);
       });
     });
 
