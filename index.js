@@ -336,7 +336,6 @@
   };
 
   function injectActionButtons() {
-    // Sembunyikan tombol submit asli jika ada
     const buttonContainer = document.querySelector(".login-horizental");
     if (buttonContainer) {
       const originalSubmit = buttonContainer.querySelector(
@@ -345,16 +344,14 @@
       if (originalSubmit) originalSubmit.style.display = "none";
     }
 
-    // Buat Sticky Action Bar jika belum ada
     if (!document.getElementById("sys-action-bar")) {
       const actionBar = document.createElement("div");
       actionBar.id = "sys-action-bar";
 
-      // Tombol TERIMA
       const approveBtn = document.createElement("button");
       approveBtn.id = "sys-btn-approve-main";
       approveBtn.type = "button";
-      approveBtn.className = "btn-custom-approve"; // Pakai class baru
+      approveBtn.className = "btn-custom-approve";
       approveBtn.innerHTML = '<i class="fa fa-check"></i> SIMPAN & TERIMA';
       approveBtn.onclick = function (e) {
         e.preventDefault();
@@ -382,11 +379,10 @@
       };
       actionBar.appendChild(approveBtn);
 
-      // Tombol TOLAK
       const rejectBtn = document.createElement("button");
       rejectBtn.id = "sys-btn-reject-main";
       rejectBtn.type = "button";
-      rejectBtn.className = "btn-custom-reject"; // Pakai class baru
+      rejectBtn.className = "btn-custom-reject";
       rejectBtn.innerHTML = '<i class="fa fa-times"></i> SIMPAN & TOLAK';
       rejectBtn.onclick = function (e) {
         e.preventDefault();
@@ -411,7 +407,6 @@
       };
       actionBar.appendChild(rejectBtn);
 
-      // Masukkan Action Bar ke body
       document.body.appendChild(actionBar);
     }
   }
@@ -575,6 +570,26 @@
     renderDashboard(data);
   }
 
+  function updatePhotoCounter() {
+    if (!viewerInstance) return;
+
+    let existingCounter = document.getElementById("sys-photo-counter");
+    if (existingCounter) existingCounter.remove();
+
+    const viewerContainer = document.querySelector(".viewer-container");
+    if (!viewerContainer) return;
+
+    const currentIndex = viewerInstance.index || 0;
+    const totalPhotos = viewerInstance.images.length || 0;
+
+    const counter = document.createElement("div");
+    counter.id = "sys-photo-counter";
+    counter.style.cssText =
+      "position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 14px; z-index: 99999; font-family: 'Segoe UI', sans-serif;";
+    counter.innerText = `Foto ${currentIndex + 1} dari ${totalPhotos}`;
+    document.body.appendChild(counter);
+  }
+
   function renderDashboard(data) {
     const { awb, nomorResi } = data;
     const photos = awb.ListPhotoJSON || {};
@@ -655,18 +670,21 @@
         view: function () {
           setTimeout(() => {
             injectStickyBoxesToViewer();
+            updatePhotoCounter();
           }, 100);
         },
       });
 
-      // --- [FITUR BARU] AUTO OPEN VIEWER ---
-      // Memberikan jeda 500ms agar dashboard render sempurna, lalu buka viewer.
       setTimeout(() => {
         if (viewerInstance) {
           viewerInstance.show();
+          updatePhotoCounter();
         }
       }, 500);
-      // -------------------------------------
+
+      viewerInstance.options.viewed = function () {
+        updatePhotoCounter();
+      };
     }
   }
 
