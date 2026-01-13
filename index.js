@@ -47,7 +47,7 @@
     "bapp_hal1_Double ceklis": "(1I) Double ceklis pada halaman 1 BAPP",
     "nm_ttd_bapp_Data tidak lengkap":
       "(1J) Data Pihak Sekolah pada BAPP tidak lengkap",
-    "bapp_hal1_Data NPSN sekolah tidak sesuai":
+    "bapp_hal1_Data BAPP sekolah tidak sesuai":
       "(1K) Data BAPP sekolah tidak sesuai",
     "bapp_hal1_Tidak terlihat jelas":
       "(1L) BAPP halaman 1 tidak terlihat jelas",
@@ -59,8 +59,8 @@
     "bapp_hal1_Tidak Sesuai/Rusak/Tidak Ada":
       "(1Q) Ceklis BAPP hal 1 terdapat ceklis TIDAK SESUAI",
     "bapp_hal1_No Surat Tugas": "(1R) Nomor surat tugas tidak ada",
-    bapp_hal1_Diedit: "(1S) BAPP Hal 1 tidak boleh diedit digital",
-    bapp_hal2_Diedit: "(1T) BAPP Hal 2 tidak boleh diedit digital",
+    "bapp_hal1_Diedit": "(1S) BAPP Hal 1 tidak boleh diedit digital",
+    "bapp_hal2_Diedit": "(1T) BAPP Hal 2 tidak boleh diedit digital",
     "nm_ttd_bapp_NIP Tidak Ada":
       "(1U) NIP/NIK penandatangan pihak sekolah tidak ada",
     "bc_bapp_sn_Tidak Sesuai": "(1V) Serial Number BAPP berbeda dengan Unit",
@@ -84,14 +84,14 @@
     "bapp_hal2_Double Ceklis": "(1AK) Double ceklis pada halaman 2",
     "bapp_hal1_BAPP terpotong": "(1AL) BAPP Halaman 1 terpotong",
     "bapp_hal2_BAPP terpotong": "(1AM) BAPP Halaman 2 terpotong",
-    "bapp_hal1_Pihak pertama hanya boleh dari kepala sekolah/wakil kepala sekolah/guru/pengajar/operator sekolah":
+    "bapp_hal1_Pihak pertama bukan dari tenaga pendidik":
       "(1AN) Pihak pertama hanya boleh dari kepala sekolah/wakil kepala sekolah/guru/pengajar/operator sekolah",
     "f_unit_Tidak ada": "(2A) Foto kelengkapan Laptop tidak ada",
     "f_unit_Tidak sesuai": "(2B) Foto kelengkapan Laptop tidak sesuai",
     "sn_laptop_Tidak Jelas": "(3A) Foto serial number tidak jelas",
     "sn_laptop_Input Tidak Sesuai": "(3B) Serial number input tidak sesuai",
     "sn_laptop_Tidak Ada": "(3C) Foto Serial Number tidak ada",
-    sn_laptop_Duplikat: "(3D) SN Duplikat",
+    "sn_laptop_Duplikat": "(3D) SN Duplikat",
     "sn_laptop_Tidak Valid": "(3E) SN tidak valid",
     "f_papan_identitas_Tidak sesuai": "(4A) Foto sekolah tidak sesuai",
     "f_papan_identitas_Tidak ada": "(4B) Foto sekolah tidak ada",
@@ -135,11 +135,7 @@
         .sys-table td { padding: 8px 10px; border-bottom: 1px solid #eee; }
 
         /* --- LOGIN MODAL CSS --- */
-        .sys-modal {
-            display: none; position: fixed; z-index: 2147483647; left: 0; top: 0; width: 100%; height: 100%; overflow: auto;
-            background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-            align-items: center; justify-content: center;
-        }
+        .sys-modal {display: none; position: fixed; z-index: 2147483647; left: 0; top: 0; width: 100%; height: 100%; overflow: auto;background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px);align-items: center; justify-content: center;}
         .sys-modal-content {
             background-color: #fefefe; padding: 30px; border: 1px solid #888; width: 350px; border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; font-family: 'Segoe UI', sans-serif;
@@ -160,9 +156,8 @@
 
         /* --- STICKY BOXES --- */
         .sys-sticky-box {position: absolute; top: 20px; z-index: 100!important;background: rgba(255, 255, 255, 0.98);padding: 18px;border-radius: 12px;box-shadow: 0 10px 30px rgba(0,0,0,0.5);width: 280px;max-height: 80vh;overflow-y: auto !important; /* WAJIB AKTIF */pointer-events: auto !important;overflow-x: hidden;font-family: 'Inter', 'Segoe UI', sans-serif !important;border: 1px solid rgba(0,0,0,0.1);scrollbar-width: thin; /* Untuk Firefox */scrollbar-color: #3498db #eee;}
-        #sys-sticky-left { left: 20px; }
+        #sys-sticky-left {left: 20px;width: 320px !important;padding: 0 !important;background: #f1f5f9 !important; /* Warna dasar header abu-biru muda */border-radius: 12px !important;border: 1px solid #e2e8f0 !important;overflow: hidden !important;box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;}
         #sys-sticky-right {right: 20px; width: 340px; border: none; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);}
-
         .sys-sticky-box::-webkit-scrollbar { width: 8px; }
         .sys-sticky-box::-webkit-scrollbar-track { background: #f1f1f1; }
         .sys-sticky-box::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -178,6 +173,17 @@
         .sys-form-select, .sys-form-input {width: 100%; height: 38px; padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d8e0; background-color: #ffffff; font-size: 13px; transition: all 0.2s ease; box-sizing: border-box;}
         .sys-form-select:hover, .sys-form-input:hover {border-color: #3498db; background-color: #fff;}
         .sys-form-select:focus, .sys-form-input:focus {border-color: #3498db; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); outline: none;}
+
+        .sys-card-header {padding: 12px 18px;background: #f1f5f9;}
+        .sys-card-header h2 {color: #0056b3;font-size: 16px;font-weight: 900; /* Extra Bold */margin: 0;line-height: 1.2;padding-bottom: 8px;}
+        .sys-card-npsn {font-size: 13px;font-weight: 600;color: #64748b;margin-top: 2px;margin-bottom: 8px;}
+        .sys-serial-section {background: #ffe4e6 !important; /* Warna pink sesuai gambar */padding: 12px 18px;border-top: 1px solid #fecdd3;border-bottom: 1px solid #fecdd3;}
+        .sys-serial-label {font-size: 10px;font-weight: 800;color: #e11d48; /* Merah gelap */text-transform: uppercase;letter-spacing: 0.5px;margin-bottom: 6px;display: block;}
+        .sys-serial-number {font-size: 22px !important;font-weight: 900 !important;color: #1e293b;letter-spacing: -0.5px;padding-top: 18px;padding-bottom: 6px;}
+        .sys-card-body {padding: 18px;background: #ffffff;}
+        .sys-info-title {font-weight: 900;font-size: 14px;color: #1e293b;margin-bottom: 6px;display: block;}
+        .sys-info-item {font-size: 13px;color: #334155;padding-top: 8px;line-height: 1.5;}
+        .sys-info-label-alamat {font-weight: 800;color: #1e293b;}
 
         #box_sn_bapp_input {background: #fff9e6; border: 1px solid #f1c40f; font-weight: bold; color: #d35400;}
         .sys-form-select { cursor: pointer !important; }
@@ -310,16 +316,18 @@
 
   const pageData = {
     npsn: document.getElementById("npsn")?.value || "-",
-    namaSekolah: (function () {
-      const el = document.querySelector(".alert-info h2");
-      if (el) {
-        const text = el.innerText;
-        const parts = text.split("-");
-        if (parts.length > 1) return parts[1].trim();
-        return text;
-      }
-      return "Tidak Ditemukan";
-    })(),
+      namaSekolah: (function () {
+          const el = document.querySelector(".alert-info h2");
+          if (el) {
+              const text = el.innerText.trim();
+              const firstDashIndex = text.indexOf("-");
+              if (firstDashIndex !== -1) {
+                  return text.substring(firstDashIndex + 1).trim();
+              }
+              return text;
+          }
+          return "Tidak Ditemukan";
+      })(),
     snPenyedia: (function () {
       const el = document.querySelector(".alert-st-one .message-mg-rt strong");
       return el ? el.innerText.trim() : "-";
@@ -706,7 +714,7 @@
       );
       if (viewerContainer && viewerInstance) {
         const key = e.key.toLowerCase();
-        const allowedKeys = ["a", "d", "q", "e", "r", "f", "escape"];
+        const allowedKeys = ["a", "d", "q", "e", "r", "x", "escape"];
 
         if (allowedKeys.includes(key)) {
           e.preventDefault();
@@ -718,7 +726,7 @@
           if (key === "q") viewerInstance.rotate(-90);
           if (key === "e") viewerInstance.rotate(90);
           if (key === "r") viewerInstance.reset();
-          if (key === "f" || key === "escape") viewerInstance.hide();
+          if (key === "x" || key === "escape") viewerInstance.hide();
         }
       }
     },
@@ -765,13 +773,23 @@
     leftBox.id = "sys-sticky-left";
     leftBox.className = "sys-sticky-box";
     leftBox.innerHTML = `
-            <div class="sys-sticky-title">Informasi Sekolah</div>
-            <div class="sys-info-row"><span class="sys-info-label">Nama Sekolah</span><span class="sys-info-value">${pageData.namaSekolah}</span></div>
-            <div class="sys-info-row"><span class="sys-info-label">NPSN</span><span class="sys-info-value">${pageData.npsn}</span></div>
-            <div class="sys-info-row"><span class="sys-info-label">No BAPP</span><span class="sys-info-value">${pageData.noBapp}</span></div>
-            <div class="sys-info-row"><span class="sys-info-label">Alamat</span><span class="sys-info-value">${pageData.alamat}</span></div>
-            <div class="sys-info-row"><span class="sys-info-label">SN Penyedia</span><span class="sys-info-value" style="color:#27ae60; font-weight:800; font-size:14px;">${pageData.snPenyedia}</span></div>
-        `;
+        <div class="sys-card-header">
+            <h2>${pageData.namaSekolah}</h2>
+            <div class="sys-card-npsn">NPSN: ${pageData.npsn}</div>
+        </div>
+
+        <div class="sys-serial-section">
+            <span class="sys-serial-label">SERIAL NUMBER</span>
+            <div class="sys-serial-number">${pageData.snPenyedia}</div>
+        </div>
+
+        <div class="sys-card-body">
+            <span class="sys-info-title">Alamat</span>
+            <div class="sys-info-item">
+                <span class="sys-info-label"></span> ${pageData.alamat}
+            </div>
+        </div>
+    `;
     viewerContainer.appendChild(leftBox);
 
     const rightBox = document.createElement("div");
