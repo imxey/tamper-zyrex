@@ -136,22 +136,13 @@
 
         /* --- LOGIN MODAL CSS --- */
         .sys-modal {display: none; position: fixed; z-index: 2147483647; left: 0; top: 0; width: 100%; height: 100%; overflow: auto;background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px);align-items: center; justify-content: center;}
-        .sys-modal-content {
-            background-color: #fefefe; padding: 30px; border: 1px solid #888; width: 350px; border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; font-family: 'Segoe UI', sans-serif;
-        }
+        .sys-modal-content {background-color: #fefefe; padding: 30px; border: 1px solid #888; width: 350px; border-radius: 10px;box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; font-family: 'Segoe UI', sans-serif;}
         .sys-modal-content h3 { margin-top: 0; color: #333; margin-bottom: 20px; font-size: 20px; }
         .sys-input-group { margin-bottom: 15px; text-align: left; }
         .sys-input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 12px; color: #555; }
-        .sys-modal-input {
-            width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px;
-            font-size: 14px; outline: none; transition: border 0.3s;
-        }
+        .sys-modal-input {width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px;font-size: 14px; outline: none; transition: border 0.3s;}
         .sys-modal-input:focus { border-color: #3498db; }
-        .sys-btn-login-action {
-            width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px;
-            font-size: 14px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 10px;
-        }
+        .sys-btn-login-action {width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px;font-size: 14px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 10px;}
         .sys-btn-login-action:hover { background: #2980b9; }
 
         /* --- STICKY BOXES --- */
@@ -187,7 +178,6 @@
 
         #box_sn_bapp_input {background: #fff9e6; border: 1px solid #f1c40f; font-weight: bold; color: #d35400;}
         .sys-form-select { cursor: pointer !important; }
-
         .sys-hidden { display: none; }
 
         /* CSS Fix for Datepicker in Sticky Box */
@@ -196,21 +186,27 @@
         .datepicker.datepicker-dropdown.dropdown-menu {z-index: 9999999999 !important;}
 
         /* --- STICKY ACTION BAR CSS --- */
-        #sys-action-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2147483647;
-            background: white; border-top: 2px solid #3498db; padding: 15px 20px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 20px;
-        }
-        .btn-custom-approve, .btn-custom-reject {
-            font-size: 14px !important; font-weight: bold !important; padding: 12px 25px !important; border-radius: 5px !important; cursor: pointer !important; text-transform: uppercase !important; color: white !important; border: none !important;
-        }
+        #sys-action-bar {position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2147483647;background: white; border-top: 2px solid #3498db; padding: 15px 20px;box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 20px;}
+        .btn-custom-approve, .btn-custom-reject {font-size: 14px !important; font-weight: bold !important; padding: 12px 25px !important; border-radius: 5px !important; cursor: pointer !important; text-transform: uppercase !important; color: white !important; border: none !important;}
         .btn-custom-approve { background-color: #10ac84 !important; }
         .btn-custom-approve:hover { background-color: #0e9471 !important; }
         .btn-custom-reject { background-color: #e74c3c !important; }
         .btn-custom-reject:hover { background-color: #c0392b !important; }
-
-        /* Padding bawah halaman agar konten tidak tertutup action bar */
         body { padding-bottom: 80px !important; }
+
+        /* --- CUSTOM ALERT MODAL --- */
+        .sys-alert-overlay {position: fixed; top: 0; left: 0; width: 100%; height: 100%;background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);display: flex; align-items: center; justify-content: center;z-index: 2147483647; opacity: 0; transition: opacity 0.3s;}
+        .sys-alert-box {background: white; width: 400px; border-radius: 12px;box-shadow: 0 20px 40px rgba(0,0,0,0.4);transform: translateY(-20px); transition: transform 0.3s;overflow: hidden; font-family: 'Segoe UI', sans-serif;}
+        .sys-alert-header {padding: 15px 20px; background: #f8f9fa;border-bottom: 1px solid #eee; font-weight: bold;display: flex; align-items: center; gap: 10px; color: #2c3e50;}
+        .sys-alert-body {padding: 20px; color: #444; line-height: 1.6; font-size: 14px;max-height: 300px; overflow-y: auto;}
+        .sys-alert-footer {padding: 15px 20px; background: #f8f9fa;border-top: 1px solid #eee; text-align: right;display: flex; justify-content: flex-end; gap: 10px;}
+        .sys-alert-btn {padding: 8px 20px; border-radius: 6px; border: none;font-weight: 600; cursor: pointer; transition: 0.2s;}
+        .sys-alert-btn-primary { background: #3498db; color: white; }
+        .sys-alert-btn-primary:hover { background: #2980b9; }
+        .sys-alert-btn-secondary { background: #e0e0e0; color: #555; }
+        .sys-alert-btn-secondary:hover { background: #d0d0d0; }
+        .sys-alert-show { opacity: 1; }
+        .sys-alert-show .sys-alert-box { transform: translateY(0); }
     `);
 
   const footer = document.querySelector(".footer-copyright-area");
@@ -233,6 +229,63 @@
         </div>
     `;
   document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+  function sysNotify(message, title = "Pemberitahuan", type = "alert", defaultValue = "") {
+    return new Promise((resolve) => {
+        const overlay = document.createElement("div");
+        overlay.className = "sys-alert-overlay";
+
+        let contentHtml = `<div class="sys-alert-body">${message.replace(/\n/g, '<br>')}</div>`;
+        let footerHtml = `<button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">OK</button>`;
+
+        // Logika untuk tipe Prompt (Reject Reason)
+        if (type === "prompt") {
+            contentHtml += `
+                <div style="padding: 0 20px 20px 20px;">
+                    <textarea id="sys-alert-input" class="sys-form-input"
+                        style="width:100%; height:80px; resize:none; font-family:inherit;"
+                        placeholder="Masukkan alasan penolakan...">${defaultValue}</textarea>
+                </div>`;
+            footerHtml = `
+                <button class="sys-alert-btn sys-alert-btn-secondary" id="sys-alert-cancel">Batal</button>
+                <button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">Kirim Tolak</button>
+            `;
+        } else if (type === "confirm") {
+            footerHtml = `
+                <button class="sys-alert-btn sys-alert-btn-secondary" id="sys-alert-cancel">Batal</button>
+                <button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">Setuju</button>
+            `;
+        }
+
+        overlay.innerHTML = `
+            <div class="sys-alert-box">
+                <div class="sys-alert-header">⚠️ ${title}</div>
+                ${contentHtml}
+                <div class="sys-alert-footer">${footerHtml}</div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.classList.add("sys-alert-show"), 10);
+
+        const inputEl = overlay.querySelector("#sys-alert-input");
+        if (inputEl) setTimeout(() => inputEl.focus(), 100);
+
+        overlay.querySelector("#sys-alert-ok").onclick = () => {
+            const val = inputEl ? inputEl.value : true;
+            overlay.classList.remove("sys-alert-show");
+            setTimeout(() => { overlay.remove(); resolve(val); }, 300);
+        };
+
+        const cancelBtn = overlay.querySelector("#sys-alert-cancel");
+        if (cancelBtn) {
+            cancelBtn.onclick = () => {
+                overlay.classList.remove("sys-alert-show");
+                setTimeout(() => { overlay.remove(); resolve(null); }, 300);
+            };
+        }
+    });
+}
 
   function checkAuth() {
     const token = localStorage.getItem("access_token_v1");
@@ -361,7 +414,7 @@
       approveBtn.type = "button";
       approveBtn.className = "btn-custom-approve";
       approveBtn.innerHTML = '<i class="fa fa-check"></i> SIMPAN & TERIMA';
-      approveBtn.onclick = function (e) {
+      approveBtn.onclick = async function (e) {
         e.preventDefault();
         const mainForm = document.querySelector("form");
         if (mainForm && !mainForm.checkValidity()) {
@@ -369,21 +422,15 @@
           return;
         }
         const autoReason = generateAutoReason();
-        if (autoReason) {
-          alert(
-            "PERINGATAN: Form Evaluasi masih ada item bermasalah:\n\n" +
-              autoReason +
-              "\n\nPerbaiki jadi 'Sesuai' jika ingin Menerima."
-          );
-          return;
-        }
-        if (
-          confirm(
-            `Yakin SIMPAN data ke Asshal dan TERIMA di Zyrex?\n\nNPSN: ${pageData.npsn}`
-          )
-        ) {
-          callApi(this, "approve", null);
-        }
+          if (autoReason) {
+              await sysNotify("Form Evaluasi masih ada item bermasalah:<br><br><b>" + autoReason + "</b><br><br>Perbaiki jadi 'Sesuai' jika ingin Menerima.", "Peringatan");
+              return;
+          }
+
+          const yakin = await sysNotify(`Yakin SIMPAN data ke Asshal dan TERIMA di Zyrex?<br><br><b>NPSN: ${pageData.npsn}</b>`, "Konfirmasi Terima", "confirm");
+          if (yakin) {
+              callApi(this, "approve", null);
+          }
       };
       actionBar.appendChild(approveBtn);
 
@@ -392,26 +439,31 @@
       rejectBtn.type = "button";
       rejectBtn.className = "btn-custom-reject";
       rejectBtn.innerHTML = '<i class="fa fa-times"></i> SIMPAN & TOLAK';
-      rejectBtn.onclick = function (e) {
-        e.preventDefault();
-        const mainForm = document.querySelector("form");
-        if (mainForm && !mainForm.checkValidity()) {
-          mainForm.reportValidity();
-          return;
-        }
-        let defaultReason = generateAutoReason();
-        if (!defaultReason) defaultReason = "";
-        const reason = prompt(
-          `Konfirmasi Penolakan:\n(Data akan disimpan ke Asshal & Ditolak di Zyrex)\n\nAlasan:`,
-          defaultReason
-        );
-        if (reason !== null) {
-          if (reason.trim() === "") {
-            alert("Alasan penolakan wajib diisi!");
-          } else {
-            callApi(this, "reject", reason);
+      rejectBtn.onclick = async function (e) {
+          e.preventDefault();
+          const mainForm = document.querySelector("form");
+          if (mainForm && !mainForm.checkValidity()) {
+              mainForm.reportValidity();
+              return;
           }
-        }
+
+          let defaultReason = generateAutoReason();
+          if (!defaultReason) defaultReason = "";
+
+          const reason = await sysNotify(
+              `Konfirmasi Penolakan:<br><small>(Data akan disimpan ke Asshal & Ditolak di Zyrex)</small>`,
+              "Alasan Penolakan",
+              "prompt",
+              defaultReason
+          );
+
+          if (reason !== null) {
+              if (reason.trim() === "") {
+                  await sysNotify("Alasan penolakan wajib diisi!", "Error");
+              } else {
+                  callApi(this, "reject", reason);
+              }
+          }
       };
       actionBar.appendChild(rejectBtn);
 
@@ -695,6 +747,7 @@
       };
     }
   }
+
 
   document.addEventListener(
     "keydown",
