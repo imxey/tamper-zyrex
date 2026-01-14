@@ -187,12 +187,29 @@
 
         /* --- STICKY ACTION BAR CSS --- */
         #sys-action-bar {position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2147483647;background: white; border-top: 2px solid #3498db; padding: 15px 20px;box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 20px;}
-        .btn-custom-approve, .btn-custom-reject {font-size: 14px !important; font-weight: bold !important; padding: 12px 25px !important; border-radius: 5px !important; cursor: pointer !important; text-transform: uppercase !important; color: white !important; border: none !important;}
-        .btn-custom-approve { background-color: #10ac84 !important; }
-        .btn-custom-approve:hover { background-color: #0e9471 !important; }
-        .btn-custom-reject { background-color: #e74c3c !important; }
-        .btn-custom-reject:hover { background-color: #c0392b !important; }
         body { padding-bottom: 80px !important; }
+        /* --- DYNAMIC ACTION BUTTON --- */
+#sys-btn-dynamic-main {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    padding: 12px 40px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    color: white !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    min-width: 250px;
+}
+
+/* Warna saat kondisi TERIMA (Hijau) */
+.state-approve { background-color: #10ac84 !important; }
+.state-approve:hover { background-color: #0e9471 !important; transform: translateY(-2px); }
+
+/* Warna saat kondisi TOLAK (Merah) */
+.state-reject { background-color: #ee5253 !important; }
+.state-reject:hover { background-color: #d63031 !important; transform: translateY(-2px); }
 
         /* --- CUSTOM ALERT MODAL --- */
         .sys-alert-overlay {position: fixed; top: 0; left: 0; width: 100%; height: 100%;background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);display: flex; align-items: center; justify-content: center;z-index: 2147483647; opacity: 0; transition: opacity 0.3s;}
@@ -311,13 +328,13 @@
 
   document
     .getElementById("sys-btn-login-action")
-    .addEventListener("click", function () {
+    .addEventListener("click", async function () {
       const user = document.getElementById("sys-auth-user").value;
       const pass = document.getElementById("sys-auth-pass").value;
       const btn = this;
 
       if (!user || !pass) {
-        alert("Username dan Password wajib diisi!");
+        await sysNotify("Username dan Password wajib diisi!", "Input Kosong");
         return;
       }
 
@@ -330,7 +347,7 @@
         url: AUTH_API_URL,
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify({ username: user, password: pass }),
-        onload: function (response) {
+        onload: async function (response) {
           btn.disabled = false;
           btn.innerText = originalText;
 
@@ -345,15 +362,13 @@
                 hideLoginModal();
                 location.reload();
               } else {
-                alert("Gagal: Token tidak ditemukan dalam respon server.");
+                await sysNotify("Gagal: Token tidak ditemukan dalam respon server.", "Login Error");
               }
             } catch (e) {
               alert("Error parsing response: " + e.message);
             }
           } else {
-            alert(
-              "Login Gagal! Cek username/password. (" + response.status + ")"
-            );
+            await sysNotify("Login Gagal! Cek username/password. (" + response.status + ")", "Login Error");
           }
         },
         onerror: function (err) {
@@ -397,78 +412,53 @@
   };
 
   function injectActionButtons() {
-    const buttonContainer = document.querySelector(".login-horizental");
-    if (buttonContainer) {
-      const originalSubmit = buttonContainer.querySelector(
-        'button[type="submit"], .btn-login'
-      );
+      // Sembunyikan tombol asli
+      const originalSubmit = document.querySelector('.login-horizental button[type="submit"], .btn-login');
       if (originalSubmit) originalSubmit.style.display = "none";
-    }
 
-    if (!document.getElementById("sys-action-bar")) {
-      const actionBar = document.createElement("div");
-      actionBar.id = "sys-action-bar";
+      if (!document.getElementById("sys-action-bar")) {
+          const actionBar = document.createElement("div");
+          actionBar.id = "sys-action-bar";
 
-      const approveBtn = document.createElement("button");
-      approveBtn.id = "sys-btn-approve-main";
-      approveBtn.type = "button";
-      approveBtn.className = "btn-custom-approve";
-      approveBtn.innerHTML = '<i class="fa fa-check"></i> SIMPAN & TERIMA';
-      approveBtn.onclick = async function (e) {
-        e.preventDefault();
-        const mainForm = document.querySelector("form");
-        if (mainForm && !mainForm.checkValidity()) {
-          mainForm.reportValidity();
-          return;
-        }
-        const autoReason = generateAutoReason();
-          if (autoReason) {
-              await sysNotify("Form Evaluasi masih ada item bermasalah:<br><br><b>" + autoReason + "</b><br><br>Perbaiki jadi 'Sesuai' jika ingin Menerima.", "Peringatan");
-              return;
-          }
+          const dynamicBtn = document.createElement("button");
+          dynamicBtn.id = "sys-btn-dynamic-main";
+          dynamicBtn.type = "button";
 
-          const yakin = await sysNotify(`Yakin SIMPAN data ke Asshal dan TERIMA di Zyrex?<br><br><b>NPSN: ${pageData.npsn}</b>`, "Konfirmasi Terima", "confirm");
-          if (yakin) {
-              callApi(this, "approve", null);
-          }
-      };
-      actionBar.appendChild(approveBtn);
-
-      const rejectBtn = document.createElement("button");
-      rejectBtn.id = "sys-btn-reject-main";
-      rejectBtn.type = "button";
-      rejectBtn.className = "btn-custom-reject";
-      rejectBtn.innerHTML = '<i class="fa fa-times"></i> SIMPAN & TOLAK';
-      rejectBtn.onclick = async function (e) {
-          e.preventDefault();
-          const mainForm = document.querySelector("form");
-          if (mainForm && !mainForm.checkValidity()) {
-              mainForm.reportValidity();
-              return;
-          }
-
-          let defaultReason = generateAutoReason();
-          if (!defaultReason) defaultReason = "";
-
-          const reason = await sysNotify(
-              `Konfirmasi Penolakan:<br><small>(Data akan disimpan ke Asshal & Ditolak di Zyrex)</small>`,
-              "Alasan Penolakan",
-              "prompt",
-              defaultReason
-          );
-
-          if (reason !== null) {
-              if (reason.trim() === "") {
-                  await sysNotify("Alasan penolakan wajib diisi!", "Error");
-              } else {
-                  callApi(this, "reject", reason);
+          dynamicBtn.onclick = async function (e) {
+              e.preventDefault();
+              const mainForm = document.querySelector("form");
+              if (mainForm && !mainForm.checkValidity()) {
+                  mainForm.reportValidity();
+                  return;
               }
-          }
-      };
-      actionBar.appendChild(rejectBtn);
 
-      document.body.appendChild(actionBar);
-    }
+              const action = this.getAttribute("data-action");
+
+              if (action === "approve") {
+                  const yakin = await sysNotify(`Yakin SIMPAN data ke Asshal dan TERIMA di Zyrex?<br><br><b>NPSN: ${pageData.npsn}</b>`, "Konfirmasi Terima", "confirm");
+                  if (yakin) callApi(this, "approve", null);
+              } else {
+                  let defaultReason = generateAutoReason();
+                  const reason = await sysNotify(
+                      `<b>Deteksi Masalah Otomatis:</b><br><small>${defaultReason}</small><br><br>Konfirmasi Penolakan?`,
+                      "Alasan Penolakan",
+                      "prompt",
+                      defaultReason
+                  );
+                  if (reason !== null && reason.trim() !== "") {
+                      callApi(this, "reject", reason);
+                  } else if (reason !== null) {
+                      await sysNotify("Alasan penolakan wajib diisi!", "Peringatan");
+                  }
+              }
+          };
+
+          actionBar.appendChild(dynamicBtn);
+          document.body.appendChild(actionBar);
+
+          // Inisialisasi status tombol pertama kali
+          updateDynamicButtonState();
+      }
   }
 
   function callApi(btnElement, actionType, reason) {
@@ -487,9 +477,9 @@
       url: url,
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(payload),
-      onload: function (response) {
+      onload: async function (response) {
         if (response.status === 401 || response.status === 403) {
-          alert("⚠️ Sesi Habis! Silakan login ulang.");
+          await sysNotify("⚠️ Sesi Habis! Silakan login ulang.", "Sesi Berakhir");
           localStorage.removeItem("access_token_v1");
           showLoginModal();
           btnElement.disabled = false;
@@ -516,11 +506,7 @@
             errMsg =
               JSON.parse(response.responseText).error || response.responseText;
           } catch (e) {}
-          alert(
-            `❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${
-              response.status
-            }\nPesan: ${errMsg}`
-          );
+          await sysNotify(`❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${response.status}\nPesan: ${errMsg}`, "Error API");
         }
       },
       onerror: function (err) {
@@ -593,6 +579,27 @@
     }
     return issues.join(", ");
   }
+
+   function isFormValidForApprove() {
+       const issues = generateAutoReason();
+       // Jika issues kosong (string kosong ""), berarti semua 'Sesuai/Lengkap/Jelas/Ada/Konsisten'
+       return issues === "";
+   }
+
+    function updateDynamicButtonState() {
+        const btn = document.getElementById("sys-btn-dynamic-main");
+        if (!btn) return;
+
+        if (isFormValidForApprove()) {
+            btn.innerHTML = '<i class="fa fa-check-circle"></i> SIMPAN & TERIMA';
+            btn.className = "state-approve";
+            btn.setAttribute("data-action", "approve");
+        } else {
+            btn.innerHTML = '<i class="fa fa-times-circle"></i> SIMPAN & TOLAK';
+            btn.className = "state-reject";
+            btn.setAttribute("data-action", "reject");
+        }
+    }
 
   injectActionButtons();
 
@@ -1003,6 +1010,7 @@
         if (tName === "ket_tgl_bapp") handleDateVisibility(val);
         if (tName === "bc_bapp_sn") handleSNLogic(val);
         cascadeDropdownChanges(tName, val, pageJQuery);
+        updateDynamicButtonState();
       });
     });
 
