@@ -28,6 +28,8 @@
   };
 
   let lastHistoryDate = "";
+  let confirmationEnabled =
+    localStorage.getItem("sys_confirm_enabled") !== "false";
 
   const REASON_MAPPING = {
     "bapp_hal2_Simpulan Belum Dipilih":
@@ -59,8 +61,8 @@
     "bapp_hal1_Tidak Sesuai/Rusak/Tidak Ada":
       "(1Q) Ceklis BAPP hal 1 terdapat ceklis TIDAK SESUAI",
     "bapp_hal1_No Surat Tugas": "(1R) Nomor surat tugas tidak ada",
-    "bapp_hal1_Diedit": "(1S) BAPP Hal 1 tidak boleh diedit digital",
-    "bapp_hal2_Diedit": "(1T) BAPP Hal 2 tidak boleh diedit digital",
+    bapp_hal1_Diedit: "(1S) BAPP Hal 1 tidak boleh diedit digital",
+    bapp_hal2_Diedit: "(1T) BAPP Hal 2 tidak boleh diedit digital",
     "nm_ttd_bapp_NIP Tidak Ada":
       "(1U) NIP/NIK penandatangan pihak sekolah tidak ada",
     "bc_bapp_sn_Tidak Sesuai": "(1V) Serial Number BAPP berbeda dengan Unit",
@@ -91,7 +93,7 @@
     "sn_laptop_Tidak Jelas": "(3A) Foto serial number tidak jelas",
     "sn_laptop_Input Tidak Sesuai": "(3B) Serial number input tidak sesuai",
     "sn_laptop_Tidak Ada": "(3C) Foto Serial Number tidak ada",
-    "sn_laptop_Duplikat": "(3D) SN Duplikat",
+    sn_laptop_Duplikat: "(3D) SN Duplikat",
     "sn_laptop_Tidak Valid": "(3E) SN tidak valid",
     "f_papan_identitas_Tidak sesuai": "(4A) Foto sekolah tidak sesuai",
     "f_papan_identitas_Tidak ada": "(4B) Foto sekolah tidak ada",
@@ -122,6 +124,10 @@
         .sys-status-label { font-size: 12px; padding: 4px 12px; background: #3498db; color: white; border-radius: 2px; font-weight: 600; }
         .sys-btn-reset { font-size: 10px; padding: 4px 8px; border: 1px solid #ccc; background: #fff; border-radius: 3px; cursor: pointer; color: #555; display: flex; align-items: center; gap: 3px; }
         .sys-btn-reset:hover { background: #f0f0f0; border-color: #999; color: #333; }
+        .sys-btn-toggle-confirm { font-size: 10px; padding: 4px 10px; border: 1px solid #ccc; background: #fff; border-radius: 3px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; transition: all 0.2s; }
+        .sys-btn-toggle-confirm.enabled { background: #27ae60; color: white; border-color: #27ae60; }
+        .sys-btn-toggle-confirm.disabled { background: #e74c3c; color: white; border-color: #e74c3c; }
+        .sys-btn-toggle-confirm:hover { transform: scale(1.02); }
 
         .sys-content { padding: 20px; }
         .sys-section-header { font-size: 14px; font-weight: bold; color: #2c3e50; margin-bottom: 15px; border-bottom: 2px solid #3498db; display: inline-block; padding-bottom: 5px; }
@@ -153,7 +159,11 @@
         .sys-sticky-box::-webkit-scrollbar-track { background: #f1f1f1; }
         .sys-sticky-box::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
-        .sys-sticky-title { font-size: 14px !important; font-weight: 800 !important; letter-spacing: 1px; padding-bottom: 10px; margin-bottom: 15px !important; text-align: center; color: #2c3e50 !important; border-bottom: 2px solid #3498db !important; text-transform: uppercase !important; display: block !important; }
+        .sys-sticky-title { font-size: 14px !important; font-weight: 800 !important; letter-spacing: 1px; padding-bottom: 10px; margin-bottom: 15px !important; text-align: center; color: #2c3e50 !important; border-bottom: 2px solid #3498db !important; text-transform: uppercase !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; }
+        .sys-toggle-mini { font-size: 8px !important; padding: 2px 6px !important; border: 1px solid #ccc; background: #fff; border-radius: 3px; cursor: pointer; display: inline-flex !important; align-items: center; gap: 3px; font-weight: 700; transition: all 0.2s; white-space: nowrap; }
+        .sys-toggle-mini.enabled { background: #27ae60; color: white; border-color: #27ae60; }
+        .sys-toggle-mini.disabled { background: #e74c3c; color: white; border-color: #e74c3c; }
+        .sys-toggle-mini:hover { transform: scale(1.05); }
 
         .sys-info-row { margin-bottom: 12px !important; border-bottom: 1px solid #eee; padding-bottom: 8px !important; display: flex !important; flex-direction: column !important; gap: 4px !important; height: auto !important; line-height: normal !important; position: relative !important; clear: both !important;}
         .sys-info-label { font-weight: 700 !important; color: #666 !important; font-size: 11px !important; text-transform: uppercase; letter-spacing: 0.5px; display: block !important; margin: 0 !important; width: 100% !important; }
@@ -247,34 +257,57 @@
     `;
   document.body.insertAdjacentHTML("beforeend", modalHtml);
 
-  function sysNotify(message, title = "Pemberitahuan", type = "alert", defaultValue = "") {
+  function sysNotify(
+    message,
+    title = "Pemberitahuan",
+    type = "alert",
+    defaultValue = ""
+  ) {
     return new Promise((resolve) => {
-        const overlay = document.createElement("div");
-        overlay.className = "sys-alert-overlay";
+      const overlay = document.createElement("div");
+      overlay.className = "sys-alert-overlay";
 
-        let contentHtml = `<div class="sys-alert-body">${message.replace(/\n/g, '<br>')}</div>`;
-        let footerHtml = `<button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">OK</button>`;
+      let contentHtml = `<div class="sys-alert-body">${message.replace(
+        /\n/g,
+        "<br>"
+      )}</div>`;
+      let footerHtml = `<button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">OK</button>`;
+      // ==UserScript==
+      // @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition)
+      // @namespace    http://asshal.tech/
+      // @version      32.0
+      // @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons
+      // @author       System Admin
+      // @match        https://laptop.asshal.tech/form/*
+      // @require      https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js
+      // @grant        GM_xmlhttpRequest
+      // @grant        GM_addStyle
+      // @grant        unsafeWindow
+      // @connect      owo.mars-project.my.id
+      // @connect      owo-zyrex.mars-project.my.id
+      // @connect      localhost
+      // @connect      127.0.0.1
+      // ==/UserScript==
 
-        // Logika untuk tipe Prompt (Reject Reason)
-        if (type === "prompt") {
-            contentHtml += `
+      if (type === "prompt") {
+        contentHtml += `
                 <div style="padding: 0 20px 20px 20px;">
                     <textarea id="sys-alert-input" class="sys-form-input"
                         style="width:100%; height:80px; resize:none; font-family:inherit;"
                         placeholder="Masukkan alasan penolakan...">${defaultValue}</textarea>
                 </div>`;
-            footerHtml = `
+        footerHtml = `
                 <button class="sys-alert-btn sys-alert-btn-secondary" id="sys-alert-cancel">Batal</button>
                 <button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">Kirim Tolak</button>
             `;
-        } else if (type === "confirm") {
-            footerHtml = `
+      } else if (type === "confirm") {
+        footerHtml = `
                 <button class="sys-alert-btn sys-alert-btn-secondary" id="sys-alert-cancel">Batal</button>
                 <button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">Setuju</button>
             `;
-        }
+      }
 
-        overlay.innerHTML = `
+      overlay.innerHTML = `
             <div class="sys-alert-box">
                 <div class="sys-alert-header">⚠️ ${title}</div>
                 ${contentHtml}
@@ -282,27 +315,33 @@
             </div>
         `;
 
-        document.body.appendChild(overlay);
-        setTimeout(() => overlay.classList.add("sys-alert-show"), 10);
+      document.body.appendChild(overlay);
+      setTimeout(() => overlay.classList.add("sys-alert-show"), 10);
 
-        const inputEl = overlay.querySelector("#sys-alert-input");
-        if (inputEl) setTimeout(() => inputEl.focus(), 100);
+      const inputEl = overlay.querySelector("#sys-alert-input");
+      if (inputEl) setTimeout(() => inputEl.focus(), 100);
 
-        overlay.querySelector("#sys-alert-ok").onclick = () => {
-            const val = inputEl ? inputEl.value : true;
-            overlay.classList.remove("sys-alert-show");
-            setTimeout(() => { overlay.remove(); resolve(val); }, 300);
+      overlay.querySelector("#sys-alert-ok").onclick = () => {
+        const val = inputEl ? inputEl.value : true;
+        overlay.classList.remove("sys-alert-show");
+        setTimeout(() => {
+          overlay.remove();
+          resolve(val);
+        }, 300);
+      };
+
+      const cancelBtn = overlay.querySelector("#sys-alert-cancel");
+      if (cancelBtn) {
+        cancelBtn.onclick = () => {
+          overlay.classList.remove("sys-alert-show");
+          setTimeout(() => {
+            overlay.remove();
+            resolve(null);
+          }, 300);
         };
-
-        const cancelBtn = overlay.querySelector("#sys-alert-cancel");
-        if (cancelBtn) {
-            cancelBtn.onclick = () => {
-                overlay.classList.remove("sys-alert-show");
-                setTimeout(() => { overlay.remove(); resolve(null); }, 300);
-            };
-        }
+      }
     });
-}
+  }
 
   function checkAuth() {
     const token = localStorage.getItem("access_token_v1");
@@ -362,13 +401,19 @@
                 hideLoginModal();
                 location.reload();
               } else {
-                await sysNotify("Gagal: Token tidak ditemukan dalam respon server.", "Login Error");
+                await sysNotify(
+                  "Gagal: Token tidak ditemukan dalam respon server.",
+                  "Login Error"
+                );
               }
             } catch (e) {
               alert("Error parsing response: " + e.message);
             }
           } else {
-            await sysNotify("Login Gagal! Cek username/password. (" + response.status + ")", "Login Error");
+            await sysNotify(
+              "Login Gagal! Cek username/password. (" + response.status + ")",
+              "Login Error"
+            );
           }
         },
         onerror: function (err) {
@@ -384,18 +429,18 @@
 
   const pageData = {
     npsn: document.getElementById("npsn")?.value || "-",
-      namaSekolah: (function () {
-          const el = document.querySelector(".alert-info h2");
-          if (el) {
-              const text = el.innerText.trim();
-              const firstDashIndex = text.indexOf("-");
-              if (firstDashIndex !== -1) {
-                  return text.substring(firstDashIndex + 1).trim();
-              }
-              return text;
-          }
-          return "Tidak Ditemukan";
-      })(),
+    namaSekolah: (function () {
+      const el = document.querySelector(".alert-info h2");
+      if (el) {
+        const text = el.innerText.trim();
+        const firstDashIndex = text.indexOf("-");
+        if (firstDashIndex !== -1) {
+          return text.substring(firstDashIndex + 1).trim();
+        }
+        return text;
+      }
+      return "Tidak Ditemukan";
+    })(),
     snPenyedia: (function () {
       const el = document.querySelector(".alert-st-one .message-mg-rt strong");
       return el ? el.innerText.trim() : "-";
@@ -412,53 +457,66 @@
   };
 
   function injectActionButtons() {
-      // Sembunyikan tombol asli
-      const originalSubmit = document.querySelector('.login-horizental button[type="submit"], .btn-login');
-      if (originalSubmit) originalSubmit.style.display = "none";
+    const originalSubmit = document.querySelector(
+      '.login-horizental button[type="submit"], .btn-login'
+    );
+    if (originalSubmit) originalSubmit.style.display = "none";
 
-      if (!document.getElementById("sys-action-bar")) {
-          const actionBar = document.createElement("div");
-          actionBar.id = "sys-action-bar";
+    if (!document.getElementById("sys-action-bar")) {
+      const actionBar = document.createElement("div");
+      actionBar.id = "sys-action-bar";
 
-          const dynamicBtn = document.createElement("button");
-          dynamicBtn.id = "sys-btn-dynamic-main";
-          dynamicBtn.type = "button";
+      const dynamicBtn = document.createElement("button");
+      dynamicBtn.id = "sys-btn-dynamic-main";
+      dynamicBtn.type = "button";
 
-          dynamicBtn.onclick = async function (e) {
-              e.preventDefault();
-              const mainForm = document.querySelector("form");
-              if (mainForm && !mainForm.checkValidity()) {
-                  mainForm.reportValidity();
-                  return;
-              }
+      dynamicBtn.onclick = async function (e) {
+        e.preventDefault();
+        const mainForm = document.querySelector("form");
+        if (mainForm && !mainForm.checkValidity()) {
+          mainForm.reportValidity();
+          return;
+        }
 
-              const action = this.getAttribute("data-action");
+        const action = this.getAttribute("data-action");
 
-              if (action === "approve") {
-                  const yakin = await sysNotify(`Yakin SIMPAN data ke Asshal dan TERIMA di Zyrex?<br><br><b>NPSN: ${pageData.npsn}</b>`, "Konfirmasi Terima", "confirm");
-                  if (yakin) callApi(this, "approve", null);
-              } else {
-                  let defaultReason = generateAutoReason();
-                  const reason = await sysNotify(
-                      `<b>Deteksi Masalah Otomatis:</b><br><small>${defaultReason}</small><br><br>Konfirmasi Penolakan?`,
-                      "Alasan Penolakan",
-                      "prompt",
-                      defaultReason
-                  );
-                  if (reason !== null && reason.trim() !== "") {
-                      callApi(this, "reject", reason);
-                  } else if (reason !== null) {
-                      await sysNotify("Alasan penolakan wajib diisi!", "Peringatan");
-                  }
-              }
-          };
+        if (action === "approve") {
+          if (confirmationEnabled) {
+            const confirmed = await sysNotify(
+              "Apakah Anda yakin ingin <b>MENERIMA</b> data ini?",
+              "Konfirmasi Penerimaan",
+              "confirm"
+            );
+            if (!confirmed) return;
+          }
+          callApi(this, "approve", null);
+        } else {
+          let defaultReason = generateAutoReason();
 
-          actionBar.appendChild(dynamicBtn);
-          document.body.appendChild(actionBar);
+          if (confirmationEnabled) {
+            const reason = await sysNotify(
+              `<b>Deteksi Masalah Otomatis:</b><br><small>${defaultReason}</small><br><br>Konfirmasi Penolakan?`,
+              "Alasan Penolakan",
+              "prompt",
+              defaultReason
+            );
+            if (reason !== null && reason.trim() !== "") {
+              callApi(this, "reject", reason);
+            } else if (reason !== null) {
+              await sysNotify("Alasan penolakan wajib diisi!", "Peringatan");
+            }
+          } else {
+            // Langsung reject tanpa konfirmasi
+            callApi(this, "reject", defaultReason);
+          }
+        }
+      };
 
-          // Inisialisasi status tombol pertama kali
-          updateDynamicButtonState();
-      }
+      actionBar.appendChild(dynamicBtn);
+      document.body.appendChild(actionBar);
+
+      updateDynamicButtonState();
+    }
   }
 
   function callApi(btnElement, actionType, reason) {
@@ -479,7 +537,10 @@
       data: JSON.stringify(payload),
       onload: async function (response) {
         if (response.status === 401 || response.status === 403) {
-          await sysNotify("⚠️ Sesi Habis! Silakan login ulang.", "Sesi Berakhir");
+          await sysNotify(
+            "⚠️ Sesi Habis! Silakan login ulang.",
+            "Sesi Berakhir"
+          );
           localStorage.removeItem("access_token_v1");
           showLoginModal();
           btnElement.disabled = false;
@@ -506,7 +567,12 @@
             errMsg =
               JSON.parse(response.responseText).error || response.responseText;
           } catch (e) {}
-          await sysNotify(`❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${response.status}\nPesan: ${errMsg}`, "Error API");
+          await sysNotify(
+            `❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${
+              response.status
+            }\nPesan: ${errMsg}`,
+            "Error API"
+          );
         }
       },
       onerror: function (err) {
@@ -580,26 +646,42 @@
     return issues.join(", ");
   }
 
-   function isFormValidForApprove() {
-       const issues = generateAutoReason();
-       // Jika issues kosong (string kosong ""), berarti semua 'Sesuai/Lengkap/Jelas/Ada/Konsisten'
-       return issues === "";
-   }
+  function isFormValidForApprove() {
+    const issues = generateAutoReason();
+    // ==UserScript==
+    // @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition)
+    // @namespace    http://asshal.tech/
+    // @version      32.0
+    // @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons
+    // @author       System Admin
+    // @match        https://laptop.asshal.tech/form/*
+    // @require      https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js
+    // @grant        GM_xmlhttpRequest
+    // @grant        GM_addStyle
+    // @grant        unsafeWindow
+    // @connect      owo.mars-project.my.id
+    // @connect      owo-zyrex.mars-project.my.id
+    // @connect      localhost
+    // @connect      127.0.0.1
+    // ==/UserScript==
 
-    function updateDynamicButtonState() {
-        const btn = document.getElementById("sys-btn-dynamic-main");
-        if (!btn) return;
+    return issues === "";
+  }
 
-        if (isFormValidForApprove()) {
-            btn.innerHTML = '<i class="fa fa-check-circle"></i> SIMPAN & TERIMA';
-            btn.className = "state-approve";
-            btn.setAttribute("data-action", "approve");
-        } else {
-            btn.innerHTML = '<i class="fa fa-times-circle"></i> SIMPAN & TOLAK';
-            btn.className = "state-reject";
-            btn.setAttribute("data-action", "reject");
-        }
+  function updateDynamicButtonState() {
+    const btn = document.getElementById("sys-btn-dynamic-main");
+    if (!btn) return;
+
+    if (isFormValidForApprove()) {
+      btn.innerHTML = '<i class="fa fa-check-circle"></i> SIMPAN & TERIMA';
+      btn.className = "state-approve";
+      btn.setAttribute("data-action", "approve");
+    } else {
+      btn.innerHTML = '<i class="fa fa-times-circle"></i> SIMPAN & TOLAK';
+      btn.className = "state-reject";
+      btn.setAttribute("data-action", "reject");
     }
+  }
 
   injectActionButtons();
 
@@ -679,6 +761,18 @@
             <div class="sys-header">
                 <h3>Verifikasi AWB: ${nomorResi || "-"}</h3>
                 <div class="sys-header-right">
+                    <button id="sys-btn-toggle-confirm" class="sys-btn-toggle-confirm ${
+                      confirmationEnabled ? "enabled" : "disabled"
+                    }" title="Toggle konfirmasi modal">
+                        <span id="confirm-icon">${
+                          confirmationEnabled ? "🔔" : "🔕"
+                        }</span>
+                        <span id="confirm-text">${
+                          confirmationEnabled
+                            ? "Konfirmasi ON"
+                            : "Konfirmasi OFF"
+                        }</span>
+                    </button>
                     <button id="sys-btn-reset" class="sys-btn-reset" title="Klik untuk login ulang">🔄 Reset Token</button>
                     <span class="sys-status-label">${
                       awb.CurrentState || "UNKNOWN"
@@ -712,6 +806,29 @@
       if (btnReset) {
         btnReset.onclick = function () {
           showLoginModal();
+        };
+      }
+
+      const btnToggleConfirm = document.getElementById(
+        "sys-btn-toggle-confirm"
+      );
+      if (btnToggleConfirm) {
+        btnToggleConfirm.onclick = function () {
+          confirmationEnabled = !confirmationEnabled;
+          localStorage.setItem("sys_confirm_enabled", confirmationEnabled);
+
+          const icon = document.getElementById("confirm-icon");
+          const text = document.getElementById("confirm-text");
+
+          if (confirmationEnabled) {
+            this.className = "sys-btn-toggle-confirm enabled";
+            if (icon) icon.textContent = "🔔";
+            if (text) text.textContent = "Konfirmasi ON";
+          } else {
+            this.className = "sys-btn-toggle-confirm disabled";
+            if (icon) icon.textContent = "🔕";
+            if (text) text.textContent = "Konfirmasi OFF";
+          }
         };
       }
     }, 500);
@@ -754,7 +871,6 @@
       };
     }
   }
-
 
   document.addEventListener(
     "keydown",
@@ -894,7 +1010,16 @@
       });
     });
 
-    let formHtml = `<div class="sys-sticky-title">Form Evaluasi</div>`;
+    let formHtml = `<div class="sys-sticky-title">
+        <span>Form Evaluasi</span>
+        <button id="sys-btn-toggle-confirm-mini" class="sys-toggle-mini ${
+          confirmationEnabled ? "enabled" : "disabled"
+        }" title="Toggle konfirmasi modal">
+            <span id="confirm-icon-mini">${
+              confirmationEnabled ? "🔔" : "🔕"
+            }</span>
+        </button>
+    </div>`;
     formHtml += createDropdownHtml("ket_tgl_bapp", "Status Tgl BAPP");
     formHtml += `<div class="sys-form-row sys-hidden" id="box_date_wrapper"><label class="sys-form-label">Input Tanggal BAPP</label><input type="date" class="sys-form-input" id="box_tgl_bapp_input" value="${
       formState.tgl_manual || ""
@@ -928,6 +1053,49 @@
 
     rightBox.innerHTML = formHtml;
     viewerContainer.appendChild(rightBox);
+
+    // Setup toggle button mini di Form Evaluasi
+    const btnToggleMini = rightBox.querySelector(
+      "#sys-btn-toggle-confirm-mini"
+    );
+    if (btnToggleMini) {
+      btnToggleMini.onclick = function (e) {
+        e.stopPropagation();
+        confirmationEnabled = !confirmationEnabled;
+        localStorage.setItem("sys_confirm_enabled", confirmationEnabled);
+
+        const iconMini = this.querySelector("#confirm-icon-mini");
+
+        // Update mini toggle
+        if (confirmationEnabled) {
+          this.className = "sys-toggle-mini enabled";
+          if (iconMini) iconMini.textContent = "🔔";
+        } else {
+          this.className = "sys-toggle-mini disabled";
+          if (iconMini) iconMini.textContent = "🔕";
+        }
+
+        // Sinkronisasi dengan toggle di header dashboard
+        const btnToggleHeader = document.getElementById(
+          "sys-btn-toggle-confirm"
+        );
+        if (btnToggleHeader) {
+          const icon = document.getElementById("confirm-icon");
+          const text = document.getElementById("confirm-text");
+
+          if (confirmationEnabled) {
+            btnToggleHeader.className = "sys-btn-toggle-confirm enabled";
+            if (icon) icon.textContent = "🔔";
+            if (text) text.textContent = "Konfirmasi ON";
+          } else {
+            btnToggleHeader.className = "sys-btn-toggle-confirm disabled";
+            if (icon) icon.textContent = "🔕";
+            if (text) text.textContent = "Konfirmasi OFF";
+          }
+        }
+      };
+    }
+
     setupSyncLogic(rightBox);
   }
 
