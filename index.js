@@ -30,6 +30,8 @@
   let lastHistoryDate = "";
   let confirmationEnabled =
     localStorage.getItem("sys_confirm_enabled") !== "false";
+  // Store comments from /awb API response
+  let awbComments = [];
 
   const REASON_MAPPING = {
     "bapp_hal2_Simpulan Belum Dipilih":
@@ -261,7 +263,7 @@
     message,
     title = "Pemberitahuan",
     type = "alert",
-    defaultValue = ""
+    defaultValue = "",
   ) {
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
@@ -269,7 +271,7 @@
 
       let contentHtml = `<div class="sys-alert-body">${message.replace(
         /\n/g,
-        "<br>"
+        "<br>",
       )}</div>`;
       let footerHtml = `<button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">OK</button>`;
       // ==UserScript==
@@ -403,7 +405,7 @@
               } else {
                 await sysNotify(
                   "Gagal: Token tidak ditemukan dalam respon server.",
-                  "Login Error"
+                  "Login Error",
                 );
               }
             } catch (e) {
@@ -412,7 +414,7 @@
           } else {
             await sysNotify(
               "Login Gagal! Cek username/password. (" + response.status + ")",
-              "Login Error"
+              "Login Error",
             );
           }
         },
@@ -458,7 +460,7 @@
 
   function injectActionButtons() {
     const originalSubmit = document.querySelector(
-      '.login-horizental button[type="submit"], .btn-login'
+      '.login-horizental button[type="submit"], .btn-login',
     );
     if (originalSubmit) originalSubmit.style.display = "none";
 
@@ -485,7 +487,7 @@
             const confirmed = await sysNotify(
               "Apakah Anda yakin ingin <b>MENERIMA</b> data ini?",
               "Konfirmasi Penerimaan",
-              "confirm"
+              "confirm",
             );
             if (!confirmed) return;
           }
@@ -498,7 +500,7 @@
               `<b>Deteksi Masalah Otomatis:</b><br><small>${defaultReason}</small><br><br>Konfirmasi Penolakan?`,
               "Alasan Penolakan",
               "prompt",
-              defaultReason
+              defaultReason,
             );
             if (reason !== null && reason.trim() !== "") {
               callApi(this, "reject", reason);
@@ -539,7 +541,7 @@
         if (response.status === 401 || response.status === 403) {
           await sysNotify(
             "⚠️ Sesi Habis! Silakan login ulang.",
-            "Sesi Berakhir"
+            "Sesi Berakhir",
           );
           localStorage.removeItem("access_token_v1");
           showLoginModal();
@@ -552,7 +554,7 @@
           btnElement.innerHTML =
             '<i class="fa fa-check"></i> Menyimpan Asshal...';
           const originalSubmit = document.querySelector(
-            '.login-horizental button[type="submit"], .btn-login'
+            '.login-horizental button[type="submit"], .btn-login',
           );
           if (originalSubmit) {
             originalSubmit.click();
@@ -571,7 +573,7 @@
             `❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${
               response.status
             }\nPesan: ${errMsg}`,
-            "Error API"
+            "Error API",
           );
         }
       },
@@ -609,7 +611,7 @@
         (keyword) =>
           valLower.includes(keyword) &&
           !valLower.includes("tidak") &&
-          !valLower.includes("belum")
+          !valLower.includes("belum"),
       );
 
       if (!isSafe) {
@@ -618,7 +620,7 @@
         if (!mappedReason) {
           const searchKeyLower = exactKey.toLowerCase();
           const foundKey = Object.keys(REASON_MAPPING).find(
-            (k) => k.toLowerCase() === searchKeyLower
+            (k) => k.toLowerCase() === searchKeyLower,
           );
           if (foundKey) mappedReason = REASON_MAPPING[foundKey];
         }
@@ -626,7 +628,7 @@
           issues.push(mappedReason);
         } else {
           const originalSelect = document.querySelector(
-            `select[name="${key}"]`
+            `select[name="${key}"]`,
           );
           let label = key;
           if (originalSelect) {
@@ -716,6 +718,8 @@
 
   let viewerInstance = null;
   function initSystem(data) {
+    // Capture comments if present in updated /awb response
+    awbComments = Array.isArray(data?.comments) ? data.comments : [];
     renderDashboard(data);
   }
 
@@ -810,7 +814,7 @@
       }
 
       const btnToggleConfirm = document.getElementById(
-        "sys-btn-toggle-confirm"
+        "sys-btn-toggle-confirm",
       );
       if (btnToggleConfirm) {
         btnToggleConfirm.onclick = function () {
@@ -886,7 +890,7 @@
       }
 
       const viewerContainer = document.querySelector(
-        ".viewer-container.viewer-in"
+        ".viewer-container.viewer-in",
       );
       if (viewerContainer && viewerInstance) {
         const key = e.key.toLowerCase();
@@ -906,7 +910,7 @@
         }
       }
     },
-    true
+    true,
   );
   const handleMouseNav = (e) => {
     if (e.button === 3 || e.button === 4) {
@@ -925,7 +929,7 @@
     function (e) {
       if (handleMouseNav(e)) {
         const viewerContainer = document.querySelector(
-          ".viewer-container.viewer-in"
+          ".viewer-container.viewer-in",
         );
         if (viewerContainer && viewerInstance) {
           if (e.button === 3) viewerInstance.prev();
@@ -933,7 +937,7 @@
         }
       }
     },
-    true
+    true,
   );
 
   function injectStickyBoxesToViewer() {
@@ -964,6 +968,28 @@
             <div class="sys-info-item">
                 <span class="sys-info-label"></span> ${pageData.alamat}
             </div>
+            ${(() => {
+              if (!awbComments || awbComments.length === 0) return "";
+              const items = awbComments
+                .map((c) => {
+                  const ts = (c.CreatedAt || "")
+                    .replace("T", " ")
+                    .split("+")[0];
+                  const who = c.commenter_name
+                    ? ` — <strong>${c.commenter_name}</strong>`
+                    : "";
+                  const text = (c.comment || "")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+                  return `<li style="margin-bottom:8px; line-height:1.4;"><div style="font-size:11px; color:#64748b;">${ts}${who}</div><div style="font-size:13px; color:#0f172a;">${text}</div></li>`;
+                })
+                .join("");
+              return `
+                <div style="margin-top:14px; border-top:1px solid #e2e8f0; padding-top:12px;">
+                  <span class="sys-info-title">Komentar Verifikasi</span>
+                  <ul style="list-style: none; padding:0; margin:8px 0 0 0; max-height:180px; overflow:auto;">${items}</ul>
+                </div>`;
+            })()}
         </div>
     `;
     viewerContainer.appendChild(leftBox);
@@ -993,7 +1019,7 @@
         const toScroll = e.deltaY;
         rightBox.scrollTop += toScroll;
       },
-      { passive: false }
+      { passive: false },
     );
 
     [
@@ -1056,7 +1082,7 @@
 
     // Setup toggle button mini di Form Evaluasi
     const btnToggleMini = rightBox.querySelector(
-      "#sys-btn-toggle-confirm-mini"
+      "#sys-btn-toggle-confirm-mini",
     );
     if (btnToggleMini) {
       btnToggleMini.onclick = function (e) {
@@ -1077,7 +1103,7 @@
 
         // Sinkronisasi dengan toggle di header dashboard
         const btnToggleHeader = document.getElementById(
-          "sys-btn-toggle-confirm"
+          "sys-btn-toggle-confirm",
         );
         if (btnToggleHeader) {
           const icon = document.getElementById("confirm-icon");
@@ -1114,7 +1140,7 @@
 
     if (targetName === "bapp_hal1" && value === "Tidak ada") {
       const bcSelect = document.querySelector(
-        'select[data-target="bc_bapp_sn"]'
+        'select[data-target="bc_bapp_sn"]',
       );
       if (bcSelect) {
         bcSelect.value = "Tidak ada";
@@ -1132,7 +1158,7 @@
 
     if (targetName === "bapp_hal2" && value === "Tidak ada") {
       const ttdSelect = document.querySelector(
-        'select[data-target="nm_ttd_bapp"]'
+        'select[data-target="nm_ttd_bapp"]',
       );
       if (ttdSelect) {
         ttdSelect.value = "TTD tidak ada";
@@ -1140,7 +1166,7 @@
         syncDropdown("nm_ttd_bapp", "TTD tidak ada", pageJQuery);
       }
       const stempelSelect = document.querySelector(
-        'select[data-target="stempel"]'
+        'select[data-target="stempel"]',
       );
       if (stempelSelect) {
         stempelSelect.value = "Tidak ada";
@@ -1148,7 +1174,7 @@
         syncDropdown("stempel", "Tidak ada", pageJQuery);
       }
       const tglSelect = document.querySelector(
-        'select[data-target="ket_tgl_bapp"]'
+        'select[data-target="ket_tgl_bapp"]',
       );
       if (tglSelect) {
         tglSelect.value = "Tidak ada";
@@ -1220,7 +1246,7 @@
           this.dispatchEvent(new Event("input", { bubbles: true }));
           this.dispatchEvent(new Event("change", { bubbles: true }));
         },
-        { passive: false }
+        { passive: false },
       );
 
       ["input", "change"].forEach((evt) => {
@@ -1254,7 +1280,7 @@
 
   function createDropdownHtml(targetName, label) {
     const originalSelect = document.querySelector(
-      `select[name="${targetName}"]`
+      `select[name="${targetName}"]`,
     );
     if (!originalSelect) return "";
     let html = `<div class="sys-form-row"><label class="sys-form-label">${label}</label>`;
@@ -1297,7 +1323,7 @@
         syncDropdown(
           selectElement.getAttribute("data-target"),
           optVal,
-          pageJQuery
+          pageJQuery,
         );
         if (selectElement.getAttribute("data-target") === "ket_tgl_bapp")
           handleDateVisibility(optVal);
@@ -1310,7 +1336,7 @@
 
   function syncDropdown(targetName, value, jq) {
     const originalSelect = document.querySelector(
-      `select[name="${targetName}"]`
+      `select[name="${targetName}"]`,
     );
     if (originalSelect) {
       originalSelect.value = value;

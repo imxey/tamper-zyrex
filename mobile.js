@@ -66,7 +66,7 @@
         processBtn[0].click();
       } else {
         console.log(
-          "Gak nemu tombol PROSES, pekerjaan selesai atau istirahat dulu bestie!"
+          "Gak nemu tombol PROSES, pekerjaan selesai atau istirahat dulu bestie!",
         );
       }
     }, 800);
@@ -86,6 +86,8 @@
   };
 
   let lastHistoryDate = "";
+  // Store comments from /awb API response (mobile)
+  let awbComments = [];
 
   const REASON_MAPPING = {
     "bapp_hal2_Simpulan Belum Dipilih":
@@ -423,7 +425,7 @@
     message,
     title = "Pemberitahuan",
     type = "alert",
-    defaultValue = ""
+    defaultValue = "",
   ) {
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
@@ -431,7 +433,7 @@
 
       let contentHtml = `<div class="sys-alert-body">${message.replace(
         /\n/g,
-        "<br>"
+        "<br>",
       )}</div>`;
       let footerHtml = `<button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">OK</button>`;
 
@@ -549,7 +551,7 @@
               } else {
                 await sysNotify(
                   "Gagal: Token tidak ditemukan dalam respon server.",
-                  "Login Error"
+                  "Login Error",
                 );
               }
             } catch (e) {
@@ -558,7 +560,7 @@
           } else {
             await sysNotify(
               "Login Gagal! Cek username/password. (" + response.status + ")",
-              "Login Error"
+              "Login Error",
             );
           }
         },
@@ -604,7 +606,7 @@
 
   function injectActionButtons() {
     const originalSubmit = document.querySelector(
-      '.login-horizental button[type="submit"], .btn-login'
+      '.login-horizental button[type="submit"], .btn-login',
     );
     if (originalSubmit) originalSubmit.style.display = "none";
 
@@ -634,7 +636,7 @@
             `<b>Deteksi Masalah Otomatis:</b><br><small>${defaultReason}</small><br><br>Konfirmasi Penolakan?`,
             "Alasan Penolakan",
             "prompt",
-            defaultReason
+            defaultReason,
           );
           if (reason !== null && reason.trim() !== "") {
             callApi(this, "reject", reason);
@@ -671,7 +673,7 @@
         if (response.status === 401 || response.status === 403) {
           await sysNotify(
             "⚠️ Sesi Habis! Silakan login ulang.",
-            "Sesi Berakhir"
+            "Sesi Berakhir",
           );
           localStorage.removeItem("access_token_v1");
           showLoginModal();
@@ -684,7 +686,7 @@
           btnElement.innerHTML =
             '<i class="fa fa-check"></i> Menyimpan Asshal...';
           const originalSubmit = document.querySelector(
-            '.login-horizental button[type="submit"], .btn-login'
+            '.login-horizental button[type="submit"], .btn-login',
           );
           if (originalSubmit) {
             originalSubmit.click();
@@ -703,7 +705,7 @@
             `❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${
               response.status
             }\nPesan: ${errMsg}`,
-            "Error API"
+            "Error API",
           );
         }
       },
@@ -741,7 +743,7 @@
         (keyword) =>
           valLower.includes(keyword) &&
           !valLower.includes("tidak") &&
-          !valLower.includes("belum")
+          !valLower.includes("belum"),
       );
 
       if (!isSafe) {
@@ -750,7 +752,7 @@
         if (!mappedReason) {
           const searchKeyLower = exactKey.toLowerCase();
           const foundKey = Object.keys(REASON_MAPPING).find(
-            (k) => k.toLowerCase() === searchKeyLower
+            (k) => k.toLowerCase() === searchKeyLower,
           );
           if (foundKey) mappedReason = REASON_MAPPING[foundKey];
         }
@@ -758,7 +760,7 @@
           issues.push(mappedReason);
         } else {
           const originalSelect = document.querySelector(
-            `select[name="${key}"]`
+            `select[name="${key}"]`,
           );
           let label = key;
           if (originalSelect) {
@@ -831,6 +833,8 @@
 
   let viewerInstance = null;
   function initSystem(data) {
+    // Capture comments if present in updated /awb response
+    awbComments = Array.isArray(data?.comments) ? data.comments : [];
     renderDashboard(data);
   }
 
@@ -1006,6 +1010,26 @@
             <div class="sys-serial-number">${pageData.snPenyedia}</div>
         </div>
         <div class="sys-info-alamat">${pageData.alamat}</div>
+        ${(() => {
+          if (!awbComments || awbComments.length === 0) return "";
+          const items = awbComments
+            .map((c) => {
+              const ts = (c.CreatedAt || "").replace("T", " ").split("+")[0];
+              const who = c.commenter_name
+                ? ` — <strong>${c.commenter_name}</strong>`
+                : "";
+              const text = (c.comment || "")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+              return `<li style=\"margin-bottom:6px; line-height:1.35;\"><div style=\"font-size:10px; color:#64748b;\">${ts}${who}</div><div style=\"font-size:12px; color:#0f172a;\">${text}</div></li>`;
+            })
+            .join("");
+          return `
+            <div style=\"margin-top:10px; border-top:1px solid #e2e8f0; padding-top:8px;\">
+              <div style=\"font-weight:700; font-size:12px; color:#1e293b;\">Komentar Verifikasi</div>
+              <ul style=\"list-style: none; padding:0; margin:6px 0 0 0; max-height:140px; overflow:auto;\">${items}</ul>
+            </div>`;
+        })()}
     `;
     viewerContainer.appendChild(leftBox);
 
@@ -1064,7 +1088,7 @@
         e.stopPropagation();
         rightBox.scrollTop += e.deltaY;
       },
-      { passive: false }
+      { passive: false },
     );
 
     [
@@ -1156,7 +1180,7 @@
     }
     if (targetName === "bapp_hal1" && value === "Tidak ada") {
       const bcSelect = document.querySelector(
-        'select[data-target="bc_bapp_sn"]'
+        'select[data-target="bc_bapp_sn"]',
       );
       if (bcSelect) {
         bcSelect.value = "Tidak ada";
@@ -1173,7 +1197,7 @@
     }
     if (targetName === "bapp_hal2" && value === "Tidak ada") {
       const ttdSelect = document.querySelector(
-        'select[data-target="nm_ttd_bapp"]'
+        'select[data-target="nm_ttd_bapp"]',
       );
       if (ttdSelect) {
         ttdSelect.value = "TTD tidak ada";
@@ -1181,7 +1205,7 @@
         syncDropdown("nm_ttd_bapp", "TTD tidak ada", pageJQuery);
       }
       const stempelSelect = document.querySelector(
-        'select[data-target="stempel"]'
+        'select[data-target="stempel"]',
       );
       if (stempelSelect) {
         stempelSelect.value = "Tidak ada";
@@ -1189,7 +1213,7 @@
         syncDropdown("stempel", "Tidak ada", pageJQuery);
       }
       const tglSelect = document.querySelector(
-        'select[data-target="ket_tgl_bapp"]'
+        'select[data-target="ket_tgl_bapp"]',
       );
       if (tglSelect) {
         tglSelect.value = "Tidak ada";
@@ -1256,7 +1280,7 @@
           this.dispatchEvent(new Event("input", { bubbles: true }));
           this.dispatchEvent(new Event("change", { bubbles: true }));
         },
-        { passive: false }
+        { passive: false },
       );
 
       ["input", "change"].forEach((evt) => {
@@ -1286,7 +1310,7 @@
 
   function createDropdownHtml(targetName, label) {
     const originalSelect = document.querySelector(
-      `select[name="${targetName}"]`
+      `select[name="${targetName}"]`,
     );
     if (!originalSelect) return "";
     let html = `<div class="sys-form-row"><label class="sys-form-label">${label}</label>`;
@@ -1326,7 +1350,7 @@
         syncDropdown(
           selectElement.getAttribute("data-target"),
           optVal,
-          pageJQuery
+          pageJQuery,
         );
         if (selectElement.getAttribute("data-target") === "ket_tgl_bapp")
           handleDateVisibility(optVal);
@@ -1339,7 +1363,7 @@
 
   function syncDropdown(targetName, value, jq) {
     const originalSelect = document.querySelector(
-      `select[name="${targetName}"]`
+      `select[name="${targetName}"]`,
     );
     if (originalSelect) {
       originalSelect.value = value;
