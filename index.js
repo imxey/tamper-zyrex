@@ -986,7 +986,7 @@
                 .join("");
               return `
                 <div style="margin-top:14px; border-top:1px solid #e2e8f0; padding-top:12px;">
-                  <span class="sys-info-title">Riwayat Komentar</span>
+                  <span class="sys-info-title">Riwayat Komen</span>
                   <ul style="list-style: none; padding:0; margin:8px 0 0 0; max-height:800px; overflow:auto;">${items}</ul>
                 </div>`;
             })()}
