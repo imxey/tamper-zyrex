@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition)
 // @namespace    http://asshal.tech/
-// @version      32.0
+// @version      33.0
 // @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons
 // @author       System Admin
 // @match        https://laptop.asshal.tech/form/*
