@@ -223,6 +223,10 @@
 .state-reject { background-color: #ee5253 !important; }
 .state-reject:hover { background-color: #d63031 !important; transform: translateY(-2px); }
 
+            /* --- SKIP BUTTON --- */
+            #sys-btn-skip { font-size: 12px !important; font-weight: 800 !important; padding: 10px 20px !important; border-radius: 8px !important; cursor: pointer !important; text-transform: uppercase !important; color: #1e293b !important; background: #f1f5f9 !important; border: 1px solid #d1d8e0 !important; transition: all 0.2s ease !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; }
+            #sys-btn-skip:hover { background: #e2e8f0 !important; transform: translateY(-1px); }
+
         /* --- CUSTOM ALERT MODAL --- */
         .sys-alert-overlay {position: fixed; top: 0; left: 0; width: 100%; height: 100%;background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);display: flex; align-items: center; justify-content: center;z-index: 2147483647; opacity: 0; transition: opacity 0.3s;}
         .sys-alert-box {background: white; width: 400px; border-radius: 12px;box-shadow: 0 20px 40px rgba(0,0,0,0.4);transform: translateY(-20px); transition: transform 0.3s;overflow: hidden; font-family: 'Segoe UI', sans-serif;}
@@ -514,7 +518,35 @@
         }
       };
 
+      const skipBtn = document.createElement("button");
+      skipBtn.id = "sys-btn-skip";
+      skipBtn.type = "button";
+      skipBtn.innerText = "SKIP";
+      skipBtn.title = "Lewati dan lanjut ke halaman proses";
+      skipBtn.onclick = function (e) {
+        e.preventDefault();
+        try {
+          const npsnVal = pageData.npsn;
+          let hold = [];
+          try {
+            const raw = localStorage.getItem("hold");
+            hold = raw ? JSON.parse(raw) : [];
+            if (!Array.isArray(hold)) hold = [];
+          } catch (err) {
+            hold = [];
+          }
+          if (npsnVal && npsnVal !== "-") {
+            if (!hold.includes(npsnVal)) hold.push(npsnVal);
+            localStorage.setItem("hold", JSON.stringify(hold));
+          }
+        } catch (e) {
+          console.log("Gagal menyimpan data hold:", e);
+        }
+        window.location.href = "https://laptop.asshal.tech/proses";
+      };
+
       actionBar.appendChild(dynamicBtn);
+      actionBar.appendChild(skipBtn);
       document.body.appendChild(actionBar);
 
       updateDynamicButtonState();
