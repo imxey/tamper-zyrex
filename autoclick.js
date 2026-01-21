@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Fast Search & Click PROSES + Auto Return
+// @name         Fast Search & Click PROSES + Auto Return (Auto Next Page)
 // @namespace    http://tampermonkey.net/
-// @version      4.1
-// @description  Filter "PROSES", Click, and Auto Return from view_form
+// @version      4.2
+// @description  Filter "PROSES", Click, Auto Return, & Auto Next Page if Stuck
 // @author       Xeyla
 // @match        https://laptop.asshal.tech/proses*
 // @match        https://laptop.asshal.tech/view_form/*
@@ -15,7 +15,9 @@
   const currentUrl = window.location.href;
 
   if (currentUrl.includes("/view_form/")) {
-    console.log("Terdeteksi di halaman View Form, kembali ke Verifikasi...");
+    console.log(
+      "Terdeteksi di halaman View Form, bye-bye~ Balik ke Verifikasi...",
+    );
     setTimeout(() => {
       window.location.href = "https://laptop.asshal.tech/proses";
     }, 500);
@@ -24,6 +26,7 @@
 
   if (currentUrl.includes("/proses")) {
     const waitLoad = setInterval(() => {
+      //
       if (
         typeof unsafeWindow.jQuery !== "undefined" &&
         unsafeWindow.jQuery("#table").length
@@ -38,8 +41,9 @@
     const $ = unsafeWindow.jQuery;
     const $table = $("#table");
 
+    console.log("Table ready! Lagi nyari target nih...");
+
     setTimeout(() => {
-      //
       let hold = [];
       try {
         const raw = localStorage.getItem("hold");
@@ -57,6 +61,7 @@
       });
 
       let chosenBtn = null;
+
       allProcessBtns.each(function () {
         if (chosenBtn) return;
         const $btn = $(this);
@@ -80,12 +85,39 @@
           "background-color": "#ff0055",
           "border-color": "#ff0055",
           "font-weight": "bold",
+          color: "white",
         });
+        console.log("Ketemu! Clicking PROSES...");
         chosenBtn[0].click();
       } else {
         console.log(
-          "Tidak ada tombol PROSES yang cocok (semua di-hold atau tidak ditemukan).",
+          "Duh, gak ada tombol PROSES di page ini. Coba cek page sebelah ya...",
         );
+
+        const $nextPageLi = $(".pagination .page-next");
+        const $nextPageLink = $nextPageLi.find("a");
+
+        if ($nextPageLink.length > 0 && !$nextPageLi.hasClass("disabled")) {
+          $nextPageLink
+            .css({
+              "background-color": "#00d2d3",
+              color: "white",
+              "font-weight": "bold",
+            })
+            .text("NEXT ➡");
+
+          console.log("Gas ke Page berikutnya! ✈️");
+
+          $nextPageLink[0].click();
+
+          setTimeout(() => {
+            satSetWatWet();
+          }, 2000);
+        } else {
+          console.log(
+            "Yah, udah mentok beb. Gak ada page lagi atau tombolnya disabled. 😢",
+          );
+        }
       }
     }, 800);
   }
