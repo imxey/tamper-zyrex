@@ -4,7 +4,7 @@
 // @version      3.1
 // @description  Filter "PROSES", Click, and Auto Return from view_form
 // @author       Xeyla
-// @match        https://laptop.asshal.tech/verifikasi*
+// @match        https://laptop.asshal.tech/proses*
 // @match        https://laptop.asshal.tech/view_form/*
 // @grant        unsafeWindow
 // ==/UserScript==
@@ -14,18 +14,15 @@
 
     const currentUrl = window.location.href;
 
-    // --- LOGIKA 1: Jika berada di halaman VIEW FORM, kembalikan ke VERIFIKASI ---
     if (currentUrl.includes('/view_form/')) {
         console.log("Terdeteksi di halaman View Form, kembali ke Verifikasi...");
-        // Beri jeda sedikit (500ms) agar tidak dianggap spam/error oleh browser, lalu pindah
         setTimeout(() => {
-            window.location.href = 'https://laptop.asshal.tech/verifikasi';
+            window.location.href = 'https://laptop.asshal.tech/proses';
         }, 500);
         return;
     }
 
-    // --- LOGIKA 2: Jika berada di halaman VERIFIKASI, jalankan Auto Clicker ---
-    if (currentUrl.includes('/verifikasi')) {
+    if (currentUrl.includes('/proses')) {
         const waitLoad = setInterval(() => {
             if (typeof unsafeWindow.jQuery !== 'undefined' && unsafeWindow.jQuery('#table').length) {
                 clearInterval(waitLoad);
@@ -37,9 +34,6 @@
     function satSetWatWet() {
         const $ = unsafeWindow.jQuery;
         const $table = $('#table');
-
-        // Reset search filter ke "PROSES"
-        $table.bootstrapTable('resetSearch', 'PROSES');
 
         setTimeout(() => {
             const allProcessBtns = $('button.btn-warning').filter(function() {
@@ -55,7 +49,6 @@
                     'font-weight': 'bold'
                 });
 
-                // Klik tombolnya (akan menyebabkan web pindah ke view_form)
                 processBtn[0].click();
             } else {
                 console.log("Gak nemu tombol PROSES, pekerjaan selesai!");
