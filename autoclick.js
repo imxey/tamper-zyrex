@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Fast Search & Click PROSES + Auto Return
 // @namespace    http://tampermonkey.net/
-// @version      3.1
+// @version      4.1
 // @description  Filter "PROSES", Click, and Auto Return from view_form
 // @author       Xeyla
 // @match        https://laptop.asshal.tech/proses*
