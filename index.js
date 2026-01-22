@@ -448,8 +448,15 @@
       return "Tidak Ditemukan";
     })(),
     snPenyedia: (function () {
-      const el = document.querySelector(".alert-st-one .message-mg-rt strong");
-      return el ? el.innerText.trim() : "-";
+      // Cek SN normal
+      const elNormal = document.querySelector(
+        ".alert-st-one .message-mg-rt strong",
+      );
+      if (elNormal) return elNormal.innerText.trim();
+      // Cek SN duplikat
+      const elDupe = document.querySelector(".alert-danger strong");
+      if (elDupe) return elDupe.innerText.trim();
+      return "-";
     })(),
     alamat: (function () {
       const inputs = document.querySelectorAll('input[name="tempat"]');
@@ -619,6 +626,11 @@
 
   function generateAutoReason() {
     const issues = [];
+    // Prioritaskan SN Duplikat
+    const elDupe = document.querySelector(".alert-danger strong");
+    if (elDupe) {
+      return "(3D) SN duplikat";
+    }
     for (const [key, val] of Object.entries(formState.dropdowns)) {
       if (
         !val ||
@@ -1425,6 +1437,26 @@
     const snBox = document.getElementById("box_sn_bapp_input");
     const snReal = document.getElementById("sn_bapp");
     if (!snBox || !snReal) return;
+
+    // Cek SN duplikat
+    const elDupe = document.querySelector(".alert-danger strong");
+    if (elDupe) {
+      const snDupe = elDupe.innerText.trim();
+      snBox.value = snDupe;
+      snReal.value = snDupe;
+      formState.sn_manual = snDupe;
+      // Set value dropdown ke 'Tidak sesuai' agar valid di select
+      formState.dropdowns["bc_bapp_sn"] = "Tidak sesuai";
+      // Update select di DOM
+      const bcSelect = document.querySelector(
+        'select[data-target="bc_bapp_sn"]',
+      );
+      if (bcSelect) {
+        bcSelect.value = "Tidak sesuai";
+        bcSelect.dispatchEvent(new Event("change"));
+      }
+      return;
+    }
 
     if (value === "Ada") {
       if (pageData.snPenyedia !== "-" && !formState.sn_manual) {
