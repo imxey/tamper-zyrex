@@ -90,13 +90,35 @@
         console.log("Ketemu! Clicking PROSES...");
         chosenBtn[0].click();
       } else {
+        // Cek jika di halaman 1 dan tidak ada PROSES, langsung next page
+        const $activePage = $(".pagination .page-number.active");
+        const isFirstPage =
+          $activePage.length > 0 && $activePage.text().trim() === "1";
+        if (isFirstPage) {
+          console.log("Halaman 1 kosong, auto next ke halaman 2...");
+          const $nextPageLi = $(".pagination .page-next");
+          const $nextPageLink = $nextPageLi.find("a");
+          if ($nextPageLink.length > 0 && !$nextPageLi.hasClass("disabled")) {
+            $nextPageLink
+              .css({
+                "background-color": "#00d2d3",
+                color: "white",
+                "font-weight": "bold",
+              })
+              .text("NEXT ➡");
+            $nextPageLink[0].click();
+            setTimeout(() => {
+              satSetWatWet();
+            }, 2000);
+            return;
+          }
+        }
+        // Default: log dan next page jika ada, atau mentok
         console.log(
           "Duh, gak ada tombol PROSES di page ini. Coba cek page sebelah ya...",
         );
-
         const $nextPageLi = $(".pagination .page-next");
         const $nextPageLink = $nextPageLi.find("a");
-
         if ($nextPageLink.length > 0 && !$nextPageLi.hasClass("disabled")) {
           $nextPageLink
             .css({
@@ -105,11 +127,8 @@
               "font-weight": "bold",
             })
             .text("NEXT ➡");
-
           console.log("Gas ke Page berikutnya! ✈️");
-
           $nextPageLink[0].click();
-
           setTimeout(() => {
             satSetWatWet();
           }, 2000);

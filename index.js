@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition)
+// @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition - FIXED V2)
 // @namespace    http://asshal.tech/
-// @version      34.0
-// @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons
-// @author       System Admin
+// @version      36.0
+// @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons + Fixed Search Bar + Tidy UI
+// @author       System Admin (ft. Xeyla)
 // @match        https://laptop.asshal.tech/form/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js
 // @grant        GM_xmlhttpRequest
@@ -11,9 +11,11 @@
 // @grant        unsafeWindow
 // @connect      owo.mars-project.my.id
 // @connect      owo-zyrex.mars-project.my.id
+// @connect      taila6748c.ts.net
 // @connect      localhost
 // @connect      127.0.0.1
 // ==/UserScript==
+
 (function () {
   "use strict";
 
@@ -30,7 +32,6 @@
   let lastHistoryDate = "";
   let confirmationEnabled =
     localStorage.getItem("sys_confirm_enabled") !== "false";
-  // Store comments from /awb API response
   let awbComments = [];
 
   const REASON_MAPPING = {
@@ -201,27 +202,27 @@
         #sys-action-bar {position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2147483647;background: white; border-top: 2px solid #3498db; padding: 15px 20px;box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 20px;}
         body { padding-bottom: 80px !important; }
         /* --- DYNAMIC ACTION BUTTON --- */
-#sys-btn-dynamic-main {
-    font-size: 14px !important;
-    font-weight: bold !important;
-    padding: 12px 40px !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    text-transform: uppercase !important;
-    color: white !important;
-    border: none !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-    min-width: 250px;
-}
+        #sys-btn-dynamic-main {
+            font-size: 14px !important;
+            font-weight: bold !important;
+            padding: 12px 40px !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            text-transform: uppercase !important;
+            color: white !important;
+            border: none !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            min-width: 250px;
+        }
 
-/* Warna saat kondisi TERIMA (Hijau) */
-.state-approve { background-color: #10ac84 !important; }
-.state-approve:hover { background-color: #0e9471 !important; transform: translateY(-2px); }
+        /* Warna saat kondisi TERIMA (Hijau) */
+        .state-approve { background-color: #10ac84 !important; }
+        .state-approve:hover { background-color: #0e9471 !important; transform: translateY(-2px); }
 
-/* Warna saat kondisi TOLAK (Merah) */
-.state-reject { background-color: #ee5253 !important; }
-.state-reject:hover { background-color: #d63031 !important; transform: translateY(-2px); }
+        /* Warna saat kondisi TOLAK (Merah) */
+        .state-reject { background-color: #ee5253 !important; }
+        .state-reject:hover { background-color: #d63031 !important; transform: translateY(-2px); }
 
             /* --- SKIP BUTTON --- */
             #sys-btn-skip { font-size: 12px !important; font-weight: 800 !important; padding: 10px 20px !important; border-radius: 8px !important; cursor: pointer !important; text-transform: uppercase !important; color: #1e293b !important; background: #f1f5f9 !important; border: 1px solid #d1d8e0 !important; transition: all 0.2s ease !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; }
@@ -273,27 +274,8 @@
       const overlay = document.createElement("div");
       overlay.className = "sys-alert-overlay";
 
-      let contentHtml = `<div class="sys-alert-body">${message.replace(
-        /\n/g,
-        "<br>",
-      )}</div>`;
+      let contentHtml = `<div class="sys-alert-body">${message.replace(/\n/g, "<br>")}</div>`;
       let footerHtml = `<button class="sys-alert-btn sys-alert-btn-primary" id="sys-alert-ok">OK</button>`;
-      // ==UserScript==
-      // @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition)
-      // @namespace    http://asshal.tech/
-      // @version      32.0
-      // @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons
-      // @author       System Admin
-      // @match        https://laptop.asshal.tech/form/*
-      // @require      https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js
-      // @grant        GM_xmlhttpRequest
-      // @grant        GM_addStyle
-      // @grant        unsafeWindow
-      // @connect      owo.mars-project.my.id
-      // @connect      owo-zyrex.mars-project.my.id
-      // @connect      localhost
-      // @connect      127.0.0.1
-      // ==/UserScript==
 
       if (type === "prompt") {
         contentHtml += `
@@ -448,12 +430,10 @@
       return "Tidak Ditemukan";
     })(),
     snPenyedia: (function () {
-      // Cek SN normal
       const elNormal = document.querySelector(
         ".alert-st-one .message-mg-rt strong",
       );
       if (elNormal) return elNormal.innerText.trim();
-      // Cek SN duplikat
       const elDupe = document.querySelector(".alert-danger strong");
       if (elDupe) return elDupe.innerText.trim();
       return "-";
@@ -519,7 +499,6 @@
               await sysNotify("Alasan penolakan wajib diisi!", "Peringatan");
             }
           } else {
-            // Langsung reject tanpa konfirmasi
             callApi(this, "reject", defaultReason);
           }
         }
@@ -609,9 +588,7 @@
               JSON.parse(response.responseText).error || response.responseText;
           } catch (e) {}
           await sysNotify(
-            `❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${
-              response.status
-            }\nPesan: ${errMsg}`,
+            `❌ GAGAL ZYREX (${actionType.toUpperCase()})!\nData Asshal BELUM Disimpan.\n\nServer: ${response.status}\nPesan: ${errMsg}`,
             "Error API",
           );
         }
@@ -626,7 +603,6 @@
 
   function generateAutoReason() {
     const issues = [];
-    // Prioritaskan SN Duplikat
     const elDupe = document.querySelector(".alert-danger strong");
     if (elDupe) {
       return "(3D) SN duplikat";
@@ -694,23 +670,6 @@
 
   function isFormValidForApprove() {
     const issues = generateAutoReason();
-    // ==UserScript==
-    // @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition)
-    // @namespace    http://asshal.tech/
-    // @version      32.0
-    // @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons
-    // @author       System Admin
-    // @match        https://laptop.asshal.tech/form/*
-    // @require      https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js
-    // @grant        GM_xmlhttpRequest
-    // @grant        GM_addStyle
-    // @grant        unsafeWindow
-    // @connect      owo.mars-project.my.id
-    // @connect      owo-zyrex.mars-project.my.id
-    // @connect      localhost
-    // @connect      127.0.0.1
-    // ==/UserScript==
-
     return issues === "";
   }
 
@@ -762,7 +721,6 @@
 
   let viewerInstance = null;
   function initSystem(data) {
-    // Capture comments if present in updated /awb response
     awbComments = Array.isArray(data?.comments) ? data.comments : [];
     renderDashboard(data);
   }
@@ -787,7 +745,169 @@
     document.body.appendChild(counter);
   }
 
+  async function fetchSchoolGuru(npsn) {
+    try {
+      const res = await fetch(
+        `https://jkt-dc01.taila6748c.ts.net/fetch-school-data?npsn=${npsn}`,
+        {
+          method: "POST",
+          headers: { accept: "application/json" },
+        },
+      );
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  }
+
   function renderDashboard(data) {
+    setTimeout(async () => {
+      const npsn = pageData.npsn;
+      if (!npsn || npsn === "-") return;
+
+      const rightBox = document.getElementById("sys-sticky-right");
+      if (!rightBox) return;
+
+      if (document.getElementById("sys-guru-box")) return;
+
+      const addressDiv =
+        rightBox.querySelector(".sys-info-title")?.parentElement;
+      const guruBox = document.createElement("div");
+      guruBox.id = "sys-guru-box";
+      guruBox.style =
+        "margin:0 0 18px 0;padding:18px 12px 12px 12px;background:#f8fafc;border-radius:10px;box-shadow:0 2px 8px #0001;";
+
+      // --- FIX LAYOUT GURU BOX (Dashboard) ---
+      guruBox.innerHTML = `
+        <div style="font-weight:800; font-size:11px; text-transform:uppercase; color:#64748b; letter-spacing:0.5px; margin-bottom:8px; display:block;">Kepala Sekolah :</div>
+        <div id="sys-kepsek-nama" style="margin-bottom:12px; font-size:13px; font-weight:600; color:#1e293b; background:#f0f9ff; border:1px solid #bae6fd; padding:8px 12px; border-radius:6px; display:block;">Loading...</div>
+        <input id="sys-guru-search" class="sys-form-input" style="margin-bottom:10px;" placeholder="Cari guru..." autocomplete="off">
+        <div id="sys-guru-list" style="max-height:180px; overflow-y:auto; border:1px solid #e2e8f0; background:#fff; border-radius:7px; padding:4px;"></div>
+      `;
+
+      if (addressDiv) {
+        addressDiv.parentElement.insertBefore(guruBox, addressDiv);
+      } else {
+        rightBox.insertBefore(guruBox, rightBox.firstChild);
+      }
+
+      const schoolData = await fetchSchoolGuru(npsn);
+      if (!schoolData) {
+        document.getElementById("sys-kepsek-nama").innerText =
+          "Gagal fetch data.";
+        return;
+      }
+      document.getElementById("sys-kepsek-nama").innerHTML =
+        `<div class="sys-kepsek-nama-block">
+          <div class="sys-kepsek-nama">${schoolData.namaKepsek || "-"}</div>
+        </div>`;
+      GM_addStyle(`
+        .sys-kepsek-nama-block {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .sys-kepsek-label {
+          font-size: 11px;
+          color: #0284c7;
+          text-transform: uppercase;
+          font-weight: 800;
+          letter-spacing: 0.5px;
+          background: #e0f2fe;
+          border-radius: 6px 6px 0 0;
+          padding: 6px 12px 2px 12px;
+          margin-bottom: 0;
+        }
+        .sys-kepsek-nama {
+          font-size: 16px;
+          color: #1e293b;
+          font-weight: 700;
+          word-break: break-word;
+          white-space: normal;
+          background: #f0f9ff;
+          border-radius: 0 0 6px 6px;
+          padding: 8px 12px 8px 12px;
+          border: 1px solid #bae6fd;
+          border-top: none;
+        }
+      `);
+
+      let guruList = schoolData.guruLain || [];
+      if (schoolData.namaKepsek) {
+        guruList = [
+          { nama: schoolData.namaKepsek, jabatan: "Kepala Sekolah" },
+          ...guruList,
+        ];
+      }
+      const listDiv = document.getElementById("sys-guru-list");
+
+      function renderList(filter) {
+        let html = "";
+        let results = guruList;
+        let searchPattern = filter?.trim().toLowerCase();
+        if (searchPattern && searchPattern.length > 1) {
+          results = guruList
+            .filter(
+              (g) =>
+                g.nama.toLowerCase().startsWith(searchPattern) ||
+                g.jabatan.toLowerCase().startsWith(searchPattern),
+            )
+            .slice(0, 5);
+        } else if (searchPattern && searchPattern.length <= 1) {
+          results = [];
+        }
+        results.forEach((g) => {
+          let nama = g.nama;
+          let jabatan = g.jabatan;
+          if (searchPattern && searchPattern.length > 1) {
+            if (nama.toLowerCase().startsWith(searchPattern)) {
+              nama = `<mark style=\"background: #ffe066; color: #222;\">${nama.slice(0, searchPattern.length)}</mark>${nama.slice(searchPattern.length)}`;
+            }
+            if (jabatan.toLowerCase().startsWith(searchPattern)) {
+              jabatan = `<mark style=\"background: #ffe066; color: #222;\">${jabatan.slice(0, searchPattern.length)}</mark>${jabatan.slice(searchPattern.length)}`;
+            }
+          }
+          html += `<div class="sys-guru-list-item"><b>${nama}</b><br><span class='sys-guru-list-jabatan'>${jabatan}</span></div>`;
+        });
+        listDiv.innerHTML =
+          html ||
+          '<div style="color:#cbd5e1; font-size:12px; padding:8px; text-align:center;">Tidak ada data ditampilkan.</div>';
+      }
+      renderList("");
+      // Tambah CSS global untuk styling hasil pencarian guru
+      GM_addStyle(`
+        .sys-guru-list-item {
+          display: block;
+          font-size: 13px;
+          line-height: 1.5;
+          padding: 8px 12px;
+          margin: 0;
+          color: #334155;
+          border-bottom: 1px solid #f1f5f9;
+          cursor: pointer;
+          background: #fff;
+          transition: background 0.15s;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .sys-guru-list-item:last-child { border-bottom: none; }
+        .sys-guru-list-item:hover { background: #f1f5f9; }
+        .sys-guru-list-jabatan {
+          color: #94a3b8;
+          font-size: 11px;
+          font-weight: 500;
+        }
+      `);
+      document
+        .getElementById("sys-guru-search")
+        .addEventListener("input", (e) => renderList(e.target.value));
+    }, 1000);
+
     const { awb, nomorResi } = data;
     const photos = awb.ListPhotoJSON || {};
     const history = awb.History || [];
@@ -809,22 +929,12 @@
             <div class="sys-header">
                 <h3>Verifikasi AWB: ${nomorResi || "-"}</h3>
                 <div class="sys-header-right">
-                    <button id="sys-btn-toggle-confirm" class="sys-btn-toggle-confirm ${
-                      confirmationEnabled ? "enabled" : "disabled"
-                    }" title="Toggle konfirmasi modal">
-                        <span id="confirm-icon">${
-                          confirmationEnabled ? "🔔" : "🔕"
-                        }</span>
-                        <span id="confirm-text">${
-                          confirmationEnabled
-                            ? "Konfirmasi ON"
-                            : "Konfirmasi OFF"
-                        }</span>
+                    <button id="sys-btn-toggle-confirm" class="sys-btn-toggle-confirm ${confirmationEnabled ? "enabled" : "disabled"}" title="Toggle konfirmasi modal">
+                        <span id="confirm-icon">${confirmationEnabled ? "🔔" : "🔕"}</span>
+                        <span id="confirm-text">${confirmationEnabled ? "Konfirmasi ON" : "Konfirmasi OFF"}</span>
                     </button>
                     <button id="sys-btn-reset" class="sys-btn-reset" title="Klik untuk login ulang">🔄 Reset Token</button>
-                    <span class="sys-status-label">${
-                      awb.CurrentState || "UNKNOWN"
-                    }</span>
+                    <span class="sys-status-label">${awb.CurrentState || "UNKNOWN"}</span>
                 </div>
             </div>
             <div class="sys-content"><div class="sys-section-header">Dokumentasi Unit</div><div id="sys-gallery-container" class="sys-gallery">`;
@@ -839,11 +949,7 @@
 
     html += `</div><div class="sys-section-header">Riwayat Pengiriman</div><div style="max-height:300px;overflow-y:auto;"><table class="sys-table"><thead><tr><th>Waktu</th><th>Lokasi</th><th>Status</th><th>Keterangan</th></tr></thead><tbody>`;
     history.forEach((h) => {
-      html += `<tr><td style="white-space:nowrap;">${h.date}</td><td>${
-        h.location_code || "-"
-      }</td><td><strong>${h.status_code}</strong></td><td>${
-        h.status
-      }<br><small style="color:#888;">${h.status_desc}</small></td></tr>`;
+      html += `<tr><td style="white-space:nowrap;">${h.date}</td><td>${h.location_code || "-"}</td><td><strong>${h.status_code}</strong></td><td>${h.status}<br><small style="color:#888;">${h.status_desc}</small></td></tr>`;
     });
     html += `</tbody></table></div></div>`;
     container.innerHTML = html;
@@ -929,9 +1035,8 @@
         ((activeEl.tagName === "INPUT" &&
           (activeEl.type === "text" || activeEl.type === "password")) ||
           activeEl.tagName === "TEXTAREA")
-      ) {
+      )
         return;
-      }
 
       const viewerContainer = document.querySelector(
         ".viewer-container.viewer-in",
@@ -956,6 +1061,7 @@
     },
     true,
   );
+
   const handleMouseNav = (e) => {
     if (e.button === 3 || e.button === 4) {
       e.preventDefault();
@@ -967,7 +1073,6 @@
   };
 
   document.addEventListener("mouseup", handleMouseNav, true);
-
   document.addEventListener(
     "mousedown",
     function (e) {
@@ -990,6 +1095,9 @@
 
     const existingLeft = viewerContainer.querySelector("#sys-sticky-left");
     const existingRight = viewerContainer.querySelector("#sys-sticky-right");
+
+    if (existingLeft && existingRight) return;
+
     if (existingLeft) existingLeft.remove();
     if (existingRight) existingRight.remove();
 
@@ -1001,17 +1109,13 @@
             <h2>${pageData.namaSekolah}</h2>
             <div class="sys-card-npsn">NPSN: ${pageData.npsn}</div>
         </div>
-
         <div class="sys-serial-section">
             <span class="sys-serial-label">SERIAL NUMBER</span>
             <div class="sys-serial-number">${pageData.snPenyedia}</div>
         </div>
-
         <div class="sys-card-body">
             <span class="sys-info-title">Alamat</span>
-            <div class="sys-info-item">
-                <span class="sys-info-label"></span> ${pageData.alamat}
-            </div>
+            <div class="sys-info-item"><span class="sys-info-label"></span> ${pageData.alamat}</div>
             ${(() => {
               if (!awbComments || awbComments.length === 0) return "";
               const items = awbComments
@@ -1028,11 +1132,7 @@
                   return `<li style="margin-bottom:8px; line-height:1.4;"><div style="font-size:13px; color:#64748b;">${ts}${who}</div><div style="font-size:17px; color:#0f172a;">${text}</div></li>`;
                 })
                 .join("");
-              return `
-                <div style="margin-top:14px; border-top:1px solid #e2e8f0; padding-top:12px;">
-                  <span class="sys-info-title">Riwayat Komentar</span>
-                  <ul style="list-style: none; padding:0; margin:8px 0 0 0; max-height:800px; overflow:auto;">${items}</ul>
-                </div>`;
+              return `<div style="margin-top:14px; border-top:1px solid #e2e8f0; padding-top:12px;"><span class="sys-info-title">Riwayat Komentar</span><ul style="list-style: none; padding:0; margin:8px 0 0 0; max-height:800px; overflow:auto;">${items}</ul></div>`;
             })()}
         </div>
     `;
@@ -1048,14 +1148,12 @@
         viewerInstance.options.movable = false;
       }
     });
-
     rightBox.addEventListener("mouseleave", () => {
       if (viewerInstance) {
         viewerInstance.options.zoomable = true;
         viewerInstance.options.movable = true;
       }
     });
-
     rightBox.addEventListener(
       "wheel",
       (e) => {
@@ -1065,7 +1163,6 @@
       },
       { passive: false },
     );
-
     [
       "mousedown",
       "mouseup",
@@ -1080,20 +1177,9 @@
       });
     });
 
-    let formHtml = `<div class="sys-sticky-title">
-        <span>Form Evaluasi</span>
-        <button id="sys-btn-toggle-confirm-mini" class="sys-toggle-mini ${
-          confirmationEnabled ? "enabled" : "disabled"
-        }" title="Toggle konfirmasi modal">
-            <span id="confirm-icon-mini">${
-              confirmationEnabled ? "🔔" : "🔕"
-            }</span>
-        </button>
-    </div>`;
+    let formHtml = `<div class="sys-sticky-title"><span>Form Evaluasi</span><button id="sys-btn-toggle-confirm-mini" class="sys-toggle-mini ${confirmationEnabled ? "enabled" : "disabled"}" title="Toggle konfirmasi modal"><span id="confirm-icon-mini">${confirmationEnabled ? "🔔" : "🔕"}</span></button></div>`;
     formHtml += createDropdownHtml("ket_tgl_bapp", "Status Tgl BAPP");
-    formHtml += `<div class="sys-form-row sys-hidden" id="box_date_wrapper"><label class="sys-form-label">Input Tanggal BAPP</label><input type="date" class="sys-form-input" id="box_tgl_bapp_input" value="${
-      formState.tgl_manual || ""
-    }"></div>`;
+    formHtml += `<div class="sys-form-row sys-hidden" id="box_date_wrapper"><label class="sys-form-label">Input Tanggal BAPP</label><input type="date" class="sys-form-input" id="box_tgl_bapp_input" value="${formState.tgl_manual || ""}"></div>`;
 
     const fields = [
       { name: "geo_tag", label: "Geo Tagging" },
@@ -1106,11 +1192,7 @@
     fields.forEach((f) => {
       formHtml += createDropdownHtml(f.name, f.label);
     });
-
-    formHtml += `<div class="sys-form-row"><label class="sys-form-label">Input SN (Manual)</label><input type="text" class="sys-form-input" id="box_sn_bapp_input" placeholder="Ketik SN di sini..." style="text-transform:uppercase;" value="${
-      formState.sn_manual || ""
-    }"></div>`;
-
+    formHtml += `<div class="sys-form-row"><label class="sys-form-label">Input SN (Manual)</label><input type="text" class="sys-form-input" id="box_sn_bapp_input" placeholder="Ketik SN di sini..." style="text-transform:uppercase;" value="${formState.sn_manual || ""}"></div>`;
     const fields2 = [
       { name: "bapp_hal1", label: "BAPP Hal 1" },
       { name: "bapp_hal2", label: "BAPP Hal 2" },
@@ -1120,11 +1202,11 @@
     fields2.forEach((f) => {
       formHtml += createDropdownHtml(f.name, f.label);
     });
-
     rightBox.innerHTML = formHtml;
     viewerContainer.appendChild(rightBox);
 
-    // Setup toggle button mini di Form Evaluasi
+    // Dihilangkan: injectGuruBoxViewer agar tidak ada duplikasi kolom pencarian guru
+
     const btnToggleMini = rightBox.querySelector(
       "#sys-btn-toggle-confirm-mini",
     );
@@ -1133,10 +1215,7 @@
         e.stopPropagation();
         confirmationEnabled = !confirmationEnabled;
         localStorage.setItem("sys_confirm_enabled", confirmationEnabled);
-
         const iconMini = this.querySelector("#confirm-icon-mini");
-
-        // Update mini toggle
         if (confirmationEnabled) {
           this.className = "sys-toggle-mini enabled";
           if (iconMini) iconMini.textContent = "🔔";
@@ -1144,15 +1223,12 @@
           this.className = "sys-toggle-mini disabled";
           if (iconMini) iconMini.textContent = "🔕";
         }
-
-        // Sinkronisasi dengan toggle di header dashboard
         const btnToggleHeader = document.getElementById(
           "sys-btn-toggle-confirm",
         );
         if (btnToggleHeader) {
           const icon = document.getElementById("confirm-icon");
           const text = document.getElementById("confirm-text");
-
           if (confirmationEnabled) {
             btnToggleHeader.className = "sys-btn-toggle-confirm enabled";
             if (icon) icon.textContent = "🔔";
@@ -1181,7 +1257,6 @@
         }
       }
     }
-
     if (targetName === "bapp_hal1" && value === "Tidak ada") {
       const bcSelect = document.querySelector(
         'select[data-target="bc_bapp_sn"]',
@@ -1199,7 +1274,6 @@
         formState.sn_manual = "-";
       }
     }
-
     if (targetName === "bapp_hal2" && value === "Tidak ada") {
       const ttdSelect = document.querySelector(
         'select[data-target="nm_ttd_bapp"]',
@@ -1240,7 +1314,6 @@
       if (tName === "ket_tgl_bapp") handleDateVisibility(select.value);
       if (select.value === "" && !formState.dropdowns[tName])
         setBestDefault(select);
-
       select.addEventListener("change", function () {
         const val = this.value;
         formState.dropdowns[tName] = val;
@@ -1267,7 +1340,6 @@
 
     const dateBox = document.getElementById("box_tgl_bapp_input");
     const dateReal = document.querySelector('input[name="tgl_bapp"]');
-
     if (dateBox && dateReal) {
       const offsetDate = (currentDateVal, days) => {
         let d = currentDateVal ? new Date(currentDateVal) : new Date();
@@ -1275,37 +1347,26 @@
         d.setDate(d.getDate() + days);
         return d.toISOString().split("T")[0];
       };
-
       dateBox.addEventListener(
         "wheel",
         function (e) {
           e.preventDefault();
           e.stopPropagation();
-
           const direction = e.deltaY > 0 ? -1 : 1;
           const newDate = offsetDate(this.value, direction);
-
           this.value = newDate;
-
           this.dispatchEvent(new Event("input", { bubbles: true }));
           this.dispatchEvent(new Event("change", { bubbles: true }));
         },
         { passive: false },
       );
-
       ["input", "change"].forEach((evt) => {
         dateBox.addEventListener(evt, function () {
           const isoDate = this.value;
-
-          if (typeof formState !== "undefined") {
-            formState.tgl_manual = isoDate;
-          }
-
+          if (typeof formState !== "undefined") formState.tgl_manual = isoDate;
           if (!isoDate) return;
-
           const parts = isoDate.split("-");
           const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-
           if (pageJQuery) {
             const $realInput = pageJQuery(dateReal);
             if (typeof $realInput.datepicker === "function") {
@@ -1329,9 +1390,7 @@
     if (!originalSelect) return "";
     let html = `<div class="sys-form-row"><label class="sys-form-label">${label}</label>`;
     html += `<select class="sys-form-select" data-target="${targetName}">`;
-
     const savedVal = formState.dropdowns[targetName];
-
     Array.from(originalSelect.options).forEach((opt) => {
       if (opt.value) {
         let isSelected = "";
@@ -1340,9 +1399,7 @@
         } else {
           if (opt.selected) isSelected = "selected";
         }
-        html += `<option value="${
-          opt.value
-        }" ${isSelected}>${opt.text.trim()}</option>`;
+        html += `<option value="${opt.value}" ${isSelected}>${opt.text.trim()}</option>`;
       } else {
         html += `<option value="">- Pilih -</option>`;
       }
@@ -1363,7 +1420,6 @@
             ? unsafeWindow.jQuery
             : null;
         formState.dropdowns[selectElement.getAttribute("data-target")] = optVal;
-
         syncDropdown(
           selectElement.getAttribute("data-target"),
           optVal,
@@ -1403,10 +1459,8 @@
 
     if (value === "Sesuai") {
       if (wrapper) wrapper.classList.remove("sys-hidden");
-
       if (dateInput && !dateInput.value && !formState.tgl_manual) {
         let isoDate = lastHistoryDate;
-
         if (!isoDate) {
           const now = new Date();
           const year = now.getFullYear();
@@ -1414,10 +1468,8 @@
           const day = String(now.getDate()).padStart(2, "0");
           isoDate = `${year}-${month}-${day}`;
         }
-
         dateInput.value = isoDate;
         formState.tgl_manual = isoDate;
-
         if (
           realDateInput &&
           pageJQuery &&
@@ -1437,17 +1489,13 @@
     const snBox = document.getElementById("box_sn_bapp_input");
     const snReal = document.getElementById("sn_bapp");
     if (!snBox || !snReal) return;
-
-    // Cek SN duplikat
     const elDupe = document.querySelector(".alert-danger strong");
     if (elDupe) {
       const snDupe = elDupe.innerText.trim();
       snBox.value = snDupe;
       snReal.value = snDupe;
       formState.sn_manual = snDupe;
-      // Set value dropdown ke 'Tidak sesuai' agar valid di select
       formState.dropdowns["bc_bapp_sn"] = "Tidak sesuai";
-      // Update select di DOM
       const bcSelect = document.querySelector(
         'select[data-target="bc_bapp_sn"]',
       );
@@ -1457,7 +1505,6 @@
       }
       return;
     }
-
     if (value === "Ada") {
       if (pageData.snPenyedia !== "-" && !formState.sn_manual) {
         snBox.value = pageData.snPenyedia;
