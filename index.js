@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Sistem Verifikasi & Monitoring (Sticky Action Bar Edition - FIXED V2)
+// @name         Sistem Verifikasi & Monitoring (Left Side Datadik Edition)
 // @namespace    http://asshal.tech/
-// @version      36.0
-// @description  Dashboard + Auto Auth + One Click Sync + Auto Date + Auto Open Gallery + Sticky Action Buttons + Fixed Search Bar + Tidy UI
+// @version      36.1
+// @description  Dashboard + Auto Auth + One Click Sync + Sticky Action + Datadik Pindah ke Kiri
 // @author       System Admin (ft. Xeyla)
 // @match        https://laptop.asshal.tech/form/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js
@@ -156,7 +156,20 @@
 
         /* --- STICKY BOXES --- */
         .sys-sticky-box {position: absolute; top: 20px; z-index: 100!important;background: rgba(255, 255, 255, 0.98);padding: 18px;border-radius: 12px;box-shadow: 0 10px 30px rgba(0,0,0,0.5);width: 280px;max-height: 80vh;overflow-y: auto !important; /* WAJIB AKTIF */pointer-events: auto !important;overflow-x: hidden;font-family: 'Inter', 'Segoe UI', sans-serif !important;border: 1px solid rgba(0,0,0,0.1);scrollbar-width: thin; /* Untuk Firefox */scrollbar-color: #3498db #eee;}
-        #sys-sticky-left {left: 20px;width: 320px !important;padding: 0 !important;background: #f1f5f9 !important; /* Warna dasar header abu-biru muda */border-radius: 12px !important;border: 1px solid #e2e8f0 !important;overflow: hidden !important;box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;}
+
+        /* [UPDATED] Left Sticky Box CSS untuk menampung Data Guru */
+        #sys-sticky-left {
+            left: 20px;
+            width: 320px !important;
+            padding: 0 !important;
+            background: #f1f5f9 !important;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            /* Ubah overflow menjadi auto agar bisa discroll jika data guru panjang */
+            overflow-y: auto !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        }
+
         #sys-sticky-right {right: 20px; width: 340px; border: none; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);}
         .sys-sticky-box::-webkit-scrollbar { width: 8px; }
         .sys-sticky-box::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -766,17 +779,16 @@
       const npsn = pageData.npsn;
       if (!npsn || npsn === "-") return;
 
-      const rightBox = document.getElementById("sys-sticky-right");
-      if (!rightBox) return;
+      const leftBox = document.getElementById("sys-sticky-left"); // Changed to LEFT box
+      if (!leftBox) return;
 
       if (document.getElementById("sys-guru-box")) return;
 
-      const addressDiv =
-        rightBox.querySelector(".sys-info-title")?.parentElement;
       const guruBox = document.createElement("div");
       guruBox.id = "sys-guru-box";
+      // Added margin-top and padding to fit nicely inside the left box structure
       guruBox.style =
-        "margin:0 0 18px 0;padding:18px 12px 12px 12px;background:#f8fafc;border-radius:10px;box-shadow:0 2px 8px #0001;";
+        "margin-top:10px;padding:12px;background:#f8fafc;border-top:1px solid #e2e8f0;";
 
       // --- FIX LAYOUT GURU BOX (Dashboard) ---
       guruBox.innerHTML = `
@@ -786,11 +798,8 @@
         <div id="sys-guru-list" style="max-height:180px; overflow-y:auto; border:1px solid #e2e8f0; background:#fff; border-radius:7px; padding:4px;"></div>
       `;
 
-      if (addressDiv) {
-        addressDiv.parentElement.insertBefore(guruBox, addressDiv);
-      } else {
-        rightBox.insertBefore(guruBox, rightBox.firstChild);
-      }
+      // Append to the bottom of the left box
+      leftBox.appendChild(guruBox);
 
       const schoolData = await fetchSchoolGuru(npsn);
       if (!schoolData) {
@@ -1204,8 +1213,6 @@
     });
     rightBox.innerHTML = formHtml;
     viewerContainer.appendChild(rightBox);
-
-    // Dihilangkan: injectGuruBoxViewer agar tidak ada duplikasi kolom pencarian guru
 
     const btnToggleMini = rightBox.querySelector(
       "#sys-btn-toggle-confirm-mini",
