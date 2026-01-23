@@ -949,8 +949,13 @@
         ["nm_ttd_bapp", "TTD tidak ada"],
         ["stempel", "Tidak ada"],
       ];
+      const pageJQuery =
+        typeof unsafeWindow !== "undefined" && unsafeWindow.jQuery
+          ? unsafeWindow.jQuery
+          : null;
       autoFields.forEach(([key, val]) => {
         formState.dropdowns[key] = val;
+        // Update sticky form
         try {
           const sel = document.querySelector(`select[data-target='${key}']`);
           if (sel) {
@@ -958,6 +963,8 @@
             sel.dispatchEvent(new Event("change", { bubbles: true }));
           }
         } catch {}
+        // Update form asli
+        syncDropdown(key, val, pageJQuery);
       });
       // Input SN jadi '-'
       formState.sn_manual = "-";
@@ -966,6 +973,9 @@
         const snReal = document.getElementById("sn_bapp");
         if (snBox) snBox.value = "-";
         if (snReal) snReal.value = "-";
+        // Update input[name=sn_bapp] di form asli jika ada
+        const snInput = document.querySelector('input[name="sn_bapp"]');
+        if (snInput) snInput.value = "-";
         if (typeof updateDynamicButtonState === "function")
           updateDynamicButtonState();
         if (typeof updateReasonBox === "function") updateReasonBox();
