@@ -936,6 +936,42 @@
     const history = awb.History || [];
     const photoKeys = Object.keys(photos);
 
+    // Jika jumlah foto 1, auto tolak dan isi form
+    if (photoKeys.length === 1) {
+      const autoFields = [
+        ["bapp_hal1", "Tidak ada"],
+        ["bapp_hal2", "Tidak ada"],
+        ["f_papan_identitas", "Tidak ada"],
+        ["spesifikasi_dxdiag", "Tidak ada"],
+        ["f_unit", "Tidak ada"],
+        ["f_box_pic", "Tidak ada"],
+        ["bc_bapp_sn", "Tidak ada"],
+        ["nm_ttd_bapp", "TTD tidak ada"],
+        ["stempel", "Tidak ada"],
+      ];
+      autoFields.forEach(([key, val]) => {
+        formState.dropdowns[key] = val;
+        try {
+          const sel = document.querySelector(`select[data-target='${key}']`);
+          if (sel) {
+            sel.value = val;
+            sel.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        } catch {}
+      });
+      // Input SN jadi '-'
+      formState.sn_manual = "-";
+      setTimeout(() => {
+        const snBox = document.getElementById("box_sn_bapp_input");
+        const snReal = document.getElementById("sn_bapp");
+        if (snBox) snBox.value = "-";
+        if (snReal) snReal.value = "-";
+        if (typeof updateDynamicButtonState === "function")
+          updateDynamicButtonState();
+        if (typeof updateReasonBox === "function") updateReasonBox();
+      }, 500);
+    }
+
     if (history && history.length > 0) {
       const lastEvent = history[history.length - 1];
       if (lastEvent && lastEvent.date) {
