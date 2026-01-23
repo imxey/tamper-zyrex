@@ -37,52 +37,68 @@
   let currentReasonText = "";
 
   const REASON_MAPPING = {
-    "bapp_hal2_Simpulan Belum Dipilih": "(1A) Simpulan BAPP pada hal 2 belum dipilih",
+    "bapp_hal2_Simpulan Belum Dipilih":
+      "(1A) Simpulan BAPP pada hal 2 belum dipilih",
     "bapp_hal2_Tidak ada paraf": "(1B) Simpulan BAPP pada hal 2 belum diparaf",
-    "nm_ttd_bapp_Tidak Terdaftar Dapodik": "(1C) Pihak sekolah yang menandatangani BAPP tidak terdaftar dalam data Dapodik",
-    "bapp_hal1_Ceklis tidak lengkap": "(1D) Ceklis BAPP tidak lengkap pada halaman 1",
-    "bapp_hal2_Ceklis tidak lengkap": "(1E) Ceklis BAPP tidak lengkap pada halaman 2",
+    "nm_ttd_bapp_Tidak Terdaftar Dapodik":
+      "(1C) Pihak sekolah yang menandatangani BAPP tidak terdaftar dalam data Dapodik",
+    "bapp_hal1_Ceklis tidak lengkap":
+      "(1D) Ceklis BAPP tidak lengkap pada halaman 1",
+    "bapp_hal2_Ceklis tidak lengkap":
+      "(1E) Ceklis BAPP tidak lengkap pada halaman 2",
     "ket_tgl_bapp_Tidak ada": "(1F) Tanggal pada BAPP Hal 2 tidak ada",
-    "nm_ttd_bapp_TTD tidak ada": "(1G) Tidak ada tanda tangan dari Pihak Sekolah atau Pihak Kedua",
-    "nm_ttd_bapp_Tidak konsisten": "(1H) Data penandatangan pada hal 1 dan hal 2 BAPP tidak konsisten",
+    "nm_ttd_bapp_TTD tidak ada":
+      "(1G) Tidak ada tanda tangan dari Pihak Sekolah atau Pihak Kedua",
+    "nm_ttd_bapp_Tidak konsisten":
+      "(1H) Data penandatangan pada hal 1 dan hal 2 BAPP tidak konsisten",
     "bapp_hal1_Double ceklis": "(1I) Double ceklis pada halaman 1 BAPP",
-    "nm_ttd_bapp_Data tidak lengkap": "(1J) Data Pihak Sekolah pada BAPP tidak lengkap",
-    "bapp_hal1_Data BAPP sekolah tidak sesuai": "(1K) Data BAPP sekolah tidak sesuai",
-    "bapp_hal1_Tidak terlihat jelas": "(1L) BAPP halaman 1 tidak terlihat jelas",
-    "bapp_hal2_Tidak terlihat jelas": "(1M) BAPP Halaman 2 tidak terlihat jelas",
+    "nm_ttd_bapp_Data tidak lengkap":
+      "(1J) Data Pihak Sekolah pada BAPP tidak lengkap",
+    "bapp_hal1_Data BAPP sekolah tidak sesuai":
+      "(1K) Data BAPP sekolah tidak sesuai",
+    "bapp_hal1_Tidak terlihat jelas":
+      "(1L) BAPP halaman 1 tidak terlihat jelas",
+    "bapp_hal2_Tidak terlihat jelas":
+      "(1M) BAPP Halaman 2 tidak terlihat jelas",
     "bapp_hal1_Data tidak lengkap": "(1N) Data BAPP halaman 1 tidak lengkap",
     "stempel_Tidak sesuai": "(1O) Stempel pada BAPP halaman 2 tidak sesuai",
     "stempel_Tidak ada": "(1P) Stempel Tidak Ada",
-    "bapp_hal1_Tidak Sesuai/Rusak/Tidak Ada": "(1Q) Ceklis BAPP hal 1 terdapat ceklis TIDAK SESUAI",
+    "bapp_hal1_Tidak Sesuai/Rusak/Tidak Ada":
+      "(1Q) Ceklis BAPP hal 1 terdapat ceklis TIDAK SESUAI",
     "bapp_hal1_No Surat Tugas": "(1R) Nomor surat tugas tidak ada",
-    "bapp_hal1_Diedit": "(1S) BAPP Hal 1 tidak boleh diedit digital",
-    "bapp_hal2_Diedit": "(1T) BAPP Hal 2 tidak boleh diedit digital",
-    "nm_ttd_bapp_NIP Tidak Ada": "(1U) NIP/NIK penandatangan pihak sekolah tidak ada",
+    bapp_hal1_Diedit: "(1S) BAPP Hal 1 tidak boleh diedit digital",
+    bapp_hal2_Diedit: "(1T) BAPP Hal 2 tidak boleh diedit digital",
+    "nm_ttd_bapp_NIP Tidak Ada":
+      "(1U) NIP/NIK penandatangan pihak sekolah tidak ada",
     "bc_bapp_sn_Tidak Sesuai": "(1V) Serial Number BAPP berbeda dengan Unit",
     "bapp_hal1_Tidak ada": "(1W) BAPP Hal 1 tidak ada",
     "bapp_hal2_Tidak ada": "(1X) BAPP Hal 2 tidak ada",
     "bapp_hal2_Ceklis Belum Dapat Diterima": "(1Y) Ceklis Belum Dapat Diterima",
-    "bapp_hal2_Tanggal tidak konsisten": "(1Z) Tanggal pada BAPP hal 2 tidak konsisten",
-    "ket_tgl_bapp_Beda Hal 1 dan 2": "(1AA) Tanggal pada BAPP hal 1 dan 2 tidak konsisten",
+    "bapp_hal2_Tanggal tidak konsisten":
+      "(1Z) Tanggal pada BAPP hal 2 tidak konsisten",
+    "ket_tgl_bapp_Beda Hal 1 dan 2":
+      "(1AA) Tanggal pada BAPP hal 1 dan 2 tidak konsisten",
     "nm_ttd_bapp_Tidak konsisten": "(1AB) Data penandatangan beda hal 1 dan 2",
     "ket_tgl_bapp_Tidak AAda": "(1AC) Tanggal BAPP tidak ada",
     "stempel_Tidak terlihat jelas": "(1AD) Stempel tidak terlihat",
     "bc_bapp_sn_SN Tidak Ada": "(1AE) SN pada BAPP tidak ada",
     "bc_bapp_sn_Tidak ada": "(1AF) Barcode SN pada BAPP tidak ada",
     "bc_bapp_sn_Tidak terlihat jelas": "(1AG) Barcode SN pada BAPP tidak jelas",
-    "nm_ttd_bapp_Tidak ada nama terang pada bagian tanda tangan": "(1AH) Tidak ada nama terang",
+    "nm_ttd_bapp_Tidak ada nama terang pada bagian tanda tangan":
+      "(1AH) Tidak ada nama terang",
     "bc_bapp_sn_Tidak sesuai": "(1AI) Barcode SN tidak sesuai web",
     "bapp_hal2_Ceklis Minus": "(1AJ) Ceklis BAPP hal 2 minus",
     "bapp_hal2_Double Ceklis": "(1AK) Double ceklis pada halaman 2",
     "bapp_hal1_BAPP terpotong": "(1AL) BAPP Halaman 1 terpotong",
     "bapp_hal2_BAPP terpotong": "(1AM) BAPP Halaman 2 terpotong",
-    "bapp_hal1_Pihak pertama bukan dari tenaga pendidik": "(1AN) Pihak pertama hanya boleh dari kepala sekolah/wakil kepala sekolah/guru/pengajar/operator sekolah",
+    "bapp_hal1_Pihak pertama bukan dari tenaga pendidik":
+      "(1AN) Pihak pertama hanya boleh dari kepala sekolah/wakil kepala sekolah/guru/pengajar/operator sekolah",
     "f_unit_Tidak ada": "(2A) Foto kelengkapan Laptop tidak ada",
     "f_unit_Tidak sesuai": "(2B) Foto kelengkapan Laptop tidak sesuai",
     "sn_laptop_Tidak Jelas": "(3A) Foto serial number tidak jelas",
     "sn_laptop_Input Tidak Sesuai": "(3B) Serial number input tidak sesuai",
     "sn_laptop_Tidak Ada": "(3C) Foto Serial Number tidak ada",
-    "sn_laptop_Duplikat": "(3D) SN Duplikat",
+    sn_laptop_Duplikat: "(3D) SN Duplikat",
     "sn_laptop_Tidak Valid": "(3E) SN tidak valid",
     "f_papan_identitas_Tidak sesuai": "(4A) Foto sekolah tidak sesuai",
     "f_papan_identitas_Tidak ada": "(4B) Foto sekolah tidak ada",
@@ -509,40 +525,42 @@
 
         if (action === "approve") {
           if (confirmationEnabled) {
-            const confirmed = await sysNotify("Apakah Anda yakin ingin <b>MENERIMA</b> data ini?", "Konfirmasi Penerimaan", "confirm");
+            const confirmed = await sysNotify(
+              "Apakah Anda yakin ingin <b>MENERIMA</b> data ini?",
+              "Konfirmasi Penerimaan",
+              "confirm",
+            );
             if (!confirmed) return;
           }
           callApi(this, "approve", null);
         } else {
-          // --- LOGIKA REJECT MENGGUNAKAN TEXTAREA ---
-          // 1. Ambil nilai dari textarea di Left Side
           const reasonBox = document.getElementById("sys-reason-input");
           let finalReason = reasonBox ? reasonBox.value.trim() : "";
 
-          // Fallback jika textarea tidak ketemu (jarang terjadi), generate ulang
           if (!finalReason) {
-              finalReason = generateAutoReason();
+            finalReason = generateAutoReason();
           }
 
           if (!finalReason) {
-             await sysNotify("Alasan penolakan kosong. Harap isi catatan masalah di kolom kiri.", "Peringatan");
-             if(reasonBox) reasonBox.focus();
-             return;
+            await sysNotify(
+              "Alasan penolakan kosong. Harap isi catatan masalah di kolom kiri.",
+              "Peringatan",
+            );
+            if (reasonBox) reasonBox.focus();
+            return;
           }
 
           if (confirmationEnabled) {
-            // Konfirmasi sederhana tanpa input
             const confirmed = await sysNotify(
               `Alasan: <i>${finalReason}</i><br><br>Yakin ingin <b>MENOLAK</b> data ini?`,
               "Konfirmasi Penolakan",
-              "confirm"
+              "confirm",
             );
 
             if (confirmed) {
               callApi(this, "reject", finalReason);
             }
           } else {
-            // Langsung tolak tanpa tanya
             callApi(this, "reject", finalReason);
           }
         }
@@ -790,101 +808,110 @@
   }
 
   async function fetchSchoolGuru(npsn) {
-    try {
-      const res = await fetch(
-        `https://jkt-dc01.taila6748c.ts.net/fetch-school-data?npsn=${npsn}`,
-        {
-          method: "POST",
-          headers: { accept: "application/json" },
-        },
-      );
-      if (!res.ok) return null;
-      return await res.json();
-    } catch (e) {
-      return null;
+    while (true) {
+      try {
+        const res = await fetch(
+          `https://jkt-dc01.taila6748c.ts.net/fetch-school-data?npsn=${npsn}`,
+          {
+            method: "POST",
+            headers: { accept: "application/json" },
+          },
+        );
+        if (res.ok) {
+          return await res.json();
+        }
+      } catch (e) {}
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
 
-  // [NEW] Fungsi terpisah untuk merender ulang Datadik (Dipanggil saat ESC juga)
   function renderDatadikContent() {
-      const slot = document.getElementById("sys-datadik-slot");
-      // Jika slot tidak ada atau data belum ada di cache, stop
-      if (!slot || !cachedSchoolData) return;
+    const slot = document.getElementById("sys-datadik-slot");
+    if (!slot || !cachedSchoolData) return;
 
-      // Cek agar tidak render double
-      if (document.getElementById("sys-guru-box")) return;
+    if (document.getElementById("sys-guru-box")) return;
 
-      const schoolData = cachedSchoolData;
+    const schoolData = cachedSchoolData;
 
-      const guruBox = document.createElement("div");
-      guruBox.id = "sys-guru-box";
-      guruBox.style = "margin-top:10px;padding:12px;background:#f8fafc;border-top:1px solid #e2e8f0;";
+    const guruBox = document.createElement("div");
+    guruBox.id = "sys-guru-box";
+    guruBox.style =
+      "margin-top:10px;padding:12px;background:#f8fafc;border-top:1px solid #e2e8f0;";
 
-      guruBox.innerHTML = `
+    guruBox.innerHTML = `
         <div style="font-weight:800; font-size:11px; text-transform:uppercase; color:#64748b; letter-spacing:0.5px; margin-bottom:8px; display:block;">Kepala Sekolah :</div>
         <div id="sys-kepsek-nama" style="margin-bottom:12px; font-size:13px; font-weight:600; color:#1e293b; background:#f0f9ff; border:1px solid #bae6fd; padding:8px 12px; border-radius:6px; display:block;">Loading...</div>
         <input id="sys-guru-search" class="sys-form-input" style="margin-bottom:10px;" placeholder="Cari guru..." autocomplete="off">
         <div id="sys-guru-list" style="max-height:120px; overflow-y:auto; border:1px solid #e2e8f0; background:#fff; border-radius:7px; padding:4px;"></div>
       `;
 
-      slot.appendChild(guruBox);
+    slot.appendChild(guruBox);
 
-      // Render Nama Kepsek
-      const kEl = document.getElementById("sys-kepsek-nama");
-      if(kEl) {
-           kEl.innerHTML = `<div class="sys-kepsek-nama-block"><div class="sys-kepsek-nama">${schoolData.namaKepsek || "-"}</div></div>`;
-      }
+    const kEl = document.getElementById("sys-kepsek-nama");
+    if (kEl) {
+      kEl.innerHTML = `<div class="sys-kepsek-nama-block"><div class="sys-kepsek-nama">${schoolData.namaKepsek || "-"}</div></div>`;
+    }
 
-      // Render List Guru
-      GM_addStyle(`
+    GM_addStyle(`
         .sys-kepsek-nama-block { display: flex; flex-direction: column; align-items: stretch; gap: 0; width: 100%; box-sizing: border-box; }
         .sys-kepsek-label { font-size: 11px; color: #0284c7; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; background: #e0f2fe; border-radius: 6px 6px 0 0; padding: 6px 12px 2px 12px; margin-bottom: 0; }
         .sys-kepsek-nama { font-size: 16px; color: #1e293b; font-weight: 700; word-break: break-word; white-space: normal; background: #f0f9ff; border-radius: 0 0 6px 6px; padding: 8px 12px 8px 12px; border: 1px solid #bae6fd; border-top: none; }
       `);
 
-      let guruList = schoolData.guruLain || [];
-      if (schoolData.namaKepsek) {
-        guruList = [{ nama: schoolData.namaKepsek, jabatan: "Kepala Sekolah" }, ...guruList];
-      }
-      const listDiv = document.getElementById("sys-guru-list");
+    let guruList = schoolData.guruLain || [];
+    if (schoolData.namaKepsek) {
+      guruList = [
+        { nama: schoolData.namaKepsek, jabatan: "Kepala Sekolah" },
+        ...guruList,
+      ];
+    }
+    const listDiv = document.getElementById("sys-guru-list");
 
-      function renderList(filter) {
-        let html = "";
-        let results = guruList;
-        let searchPattern = filter?.trim().toLowerCase();
+    function renderList(filter) {
+      let html = "";
+      let results = guruList;
+      let searchPattern = filter?.trim().toLowerCase();
+      if (searchPattern && searchPattern.length > 1) {
+        results = guruList
+          .filter(
+            (g) =>
+              g.nama.toLowerCase().startsWith(searchPattern) ||
+              g.jabatan.toLowerCase().startsWith(searchPattern),
+          )
+          .slice(0, 5);
+      } else if (searchPattern && searchPattern.length <= 1) {
+        results = [];
+      }
+      results.forEach((g) => {
+        let nama = g.nama;
+        let jabatan = g.jabatan;
         if (searchPattern && searchPattern.length > 1) {
-          results = guruList.filter((g) => g.nama.toLowerCase().startsWith(searchPattern) || g.jabatan.toLowerCase().startsWith(searchPattern)).slice(0, 5);
-        } else if (searchPattern && searchPattern.length <= 1) {
-          results = [];
-        }
-        results.forEach((g) => {
-          let nama = g.nama;
-          let jabatan = g.jabatan;
-          if (searchPattern && searchPattern.length > 1) {
-            if (nama.toLowerCase().startsWith(searchPattern)) {
-              nama = `<mark style=\"background: #ffe066; color: #222;\">${nama.slice(0, searchPattern.length)}</mark>${nama.slice(searchPattern.length)}`;
-            }
-            if (jabatan.toLowerCase().startsWith(searchPattern)) {
-              jabatan = `<mark style=\"background: #ffe066; color: #222;\">${jabatan.slice(0, searchPattern.length)}</mark>${jabatan.slice(searchPattern.length)}`;
-            }
+          if (nama.toLowerCase().startsWith(searchPattern)) {
+            nama = `<mark style=\"background: #ffe066; color: #222;\">${nama.slice(0, searchPattern.length)}</mark>${nama.slice(searchPattern.length)}`;
           }
-          html += `<div class="sys-guru-list-item"><b>${nama}</b><br><span class='sys-guru-list-jabatan'>${jabatan}</span></div>`;
-        });
-        listDiv.innerHTML = html || '<div style="color:#cbd5e1; font-size:12px; padding:8px; text-align:center;">Tidak ada data ditampilkan.</div>';
-      }
-      renderList("");
+          if (jabatan.toLowerCase().startsWith(searchPattern)) {
+            jabatan = `<mark style=\"background: #ffe066; color: #222;\">${jabatan.slice(0, searchPattern.length)}</mark>${jabatan.slice(searchPattern.length)}`;
+          }
+        }
+        html += `<div class="sys-guru-list-item"><b>${nama}</b><br><span class='sys-guru-list-jabatan'>${jabatan}</span></div>`;
+      });
+      listDiv.innerHTML =
+        html ||
+        '<div style="color:#cbd5e1; font-size:12px; padding:8px; text-align:center;">Tidak ada data ditampilkan.</div>';
+    }
+    renderList("");
 
-      GM_addStyle(`
+    GM_addStyle(`
         .sys-guru-list-item { display: block; font-size: 13px; line-height: 1.5; padding: 8px 12px; margin: 0; color: #334155; border-bottom: 1px solid #f1f5f9; cursor: pointer; background: #fff; transition: background 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .sys-guru-list-item:last-child { border-bottom: none; }
         .sys-guru-list-item:hover { background: #f1f5f9; }
         .sys-guru-list-jabatan { color: #94a3b8; font-size: 11px; font-weight: 500; }
       `);
 
-      const searchInput = document.getElementById("sys-guru-search");
-      if(searchInput) {
-           searchInput.addEventListener("input", (e) => renderList(e.target.value));
-      }
+    const searchInput = document.getElementById("sys-guru-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => renderList(e.target.value));
+    }
   }
 
   function renderDashboard(data) {
@@ -894,15 +921,14 @@
 
       const schoolData = await fetchSchoolGuru(npsn);
       if (schoolData) {
-          // [NEW] Simpan data ke cache global
-          cachedSchoolData = schoolData;
-          // Render pertama kali
-          renderDatadikContent();
+        cachedSchoolData = schoolData;
+        renderDatadikContent();
       } else {
-           const slot = document.getElementById("sys-datadik-slot");
-           if(slot) slot.innerHTML = "<div style='padding:10px; color:red; font-size:11px;'>Gagal memuat data guru.</div>";
+        const slot = document.getElementById("sys-datadik-slot");
+        if (slot)
+          slot.innerHTML =
+            "<div style='padding:10px; color:red; font-size:11px;'>Gagal memuat data guru.</div>";
       }
-
     }, 1000);
 
     const { awb, nomorResi } = data;
@@ -1086,14 +1112,14 @@
     true,
   );
 
-    function updateReasonBox() {
-        const reason = generateAutoReason();
-        currentReasonText = reason;
-        const box = document.getElementById("sys-reason-input");
-        if (box) {
-            box.value = reason;
-        }
+  function updateReasonBox() {
+    const reason = generateAutoReason();
+    currentReasonText = reason;
+    const box = document.getElementById("sys-reason-input");
+    if (box) {
+      box.value = reason;
     }
+  }
 
   function injectStickyBoxesToViewer() {
     const viewerContainer = document.querySelector(".viewer-container");
@@ -1109,28 +1135,36 @@
     leftBox.id = "sys-sticky-left";
     leftBox.className = "sys-sticky-box";
 
-    let historyHtml = '';
+    let historyHtml = "";
     if (awbComments && awbComments.length > 0) {
-        const items = awbComments.map((c) => {
-            const rawDate = c.CreatedAt || "";
-            const datePart = rawDate.split("T")[0];
-            const timePart = rawDate.split("T")[1] ? rawDate.split("T")[1].split("+")[0].substring(0, 5) : "";
-            const ts = `${datePart} ${timePart}`;
-            const who = c.commenter_name ? `<span style="color:#0284c7;">${c.commenter_name}</span>` : "Unknown";
-            const text = (c.comment || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return `
+      const items = awbComments
+        .map((c) => {
+          const rawDate = c.CreatedAt || "";
+          const datePart = rawDate.split("T")[0];
+          const timePart = rawDate.split("T")[1]
+            ? rawDate.split("T")[1].split("+")[0].substring(0, 5)
+            : "";
+          const ts = `${datePart} ${timePart}`;
+          const who = c.commenter_name
+            ? `<span style="color:#0284c7;">${c.commenter_name}</span>`
+            : "Unknown";
+          const text = (c.comment || "")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+          return `
                 <li class="sys-history-item">
                     <div class="sys-history-meta"><span>${who}</span><span style="font-weight:400; font-size:9px;">${ts}</span></div>
                     <div class="sys-history-content">${text}</div>
                 </li>`;
-        }).join("");
-        historyHtml = `<ul class="sys-history-list">${items}</ul>`;
+        })
+        .join("");
+      historyHtml = `<ul class="sys-history-list">${items}</ul>`;
     } else {
-        historyHtml = `<div style="text-align:center; padding:15px; color:#cbd5e1; font-style:italic; border:1px dashed #e2e8f0; border-radius:6px; font-size:11px;">Belum ada riwayat penolakan.</div>`;
+      historyHtml = `<div style="text-align:center; padding:15px; color:#cbd5e1; font-style:italic; border:1px dashed #e2e8f0; border-radius:6px; font-size:11px;">Belum ada riwayat penolakan.</div>`;
     }
 
     if (currentReasonText === "") {
-        currentReasonText = generateAutoReason();
+      currentReasonText = generateAutoReason();
     }
 
     leftBox.innerHTML = `
@@ -1168,50 +1202,124 @@
     viewerContainer.appendChild(leftBox);
 
     const txtArea = leftBox.querySelector("#sys-reason-input");
-    if(txtArea) {
-        txtArea.addEventListener("input", function() {
-            currentReasonText = this.value;
-        });
+    if (txtArea) {
+      txtArea.addEventListener("input", function () {
+        currentReasonText = this.value;
+      });
     }
 
     const rightBox = document.createElement("div");
     rightBox.id = "sys-sticky-right";
     rightBox.className = "sys-sticky-box";
 
-    rightBox.addEventListener("mouseenter", () => { if (viewerInstance) { viewerInstance.options.zoomable = false; viewerInstance.options.movable = false; } });
-    rightBox.addEventListener("mouseleave", () => { if (viewerInstance) { viewerInstance.options.zoomable = true; viewerInstance.options.movable = true; } });
-    rightBox.addEventListener("wheel", (e) => { e.stopPropagation(); rightBox.scrollTop += e.deltaY; }, { passive: false });
-    ["mousedown", "mouseup", "click", "touchstart", "touchend", "keydown", "keyup"].forEach((evt) => { rightBox.addEventListener(evt, function (e) { e.stopPropagation(); }); });
+    rightBox.addEventListener("mouseenter", () => {
+      if (viewerInstance) {
+        viewerInstance.options.zoomable = false;
+        viewerInstance.options.movable = false;
+      }
+    });
+    rightBox.addEventListener("mouseleave", () => {
+      if (viewerInstance) {
+        viewerInstance.options.zoomable = true;
+        viewerInstance.options.movable = true;
+      }
+    });
+    rightBox.addEventListener(
+      "wheel",
+      (e) => {
+        e.stopPropagation();
+        rightBox.scrollTop += e.deltaY;
+      },
+      { passive: false },
+    );
+    [
+      "mousedown",
+      "mouseup",
+      "click",
+      "touchstart",
+      "touchend",
+      "keydown",
+      "keyup",
+    ].forEach((evt) => {
+      rightBox.addEventListener(evt, function (e) {
+        e.stopPropagation();
+      });
+    });
 
-    let formHtml = `<div class="sys-sticky-title"><span>Form Evaluasi</span><button id="sys-btn-toggle-confirm-mini" class="sys-toggle-mini ${confirmationEnabled ? "enabled" : "disabled"}"><span id="confirm-icon-mini">${confirmationEnabled ? "🔔" : "🔕"}</span></button></div>`;
-    formHtml += createDropdownHtml("ket_tgl_bapp", "Status Tgl BAPP");
+    let formHtml = `<div class="sys-sticky-title"><span id="tamper-sisa-today" style="display:inline-block;margin-right:12px;min-width:36px;color:#e11d48;font-size:22px;font-weight:900;vertical-align:middle;"></span><span>Form Evaluasi</span><button id="sys-btn-toggle-confirm-mini" class="sys-toggle-mini ${confirmationEnabled ? "enabled" : "disabled"}"><span id="confirm-icon-mini">${confirmationEnabled ? "🔔" : "🔕"}</span></button></div>`;
+    // Update angka Sisa jika sudah ada hasil fetch
+    setTimeout(() => {
+      if (window._tamperSisaToday !== undefined) {
+        const sisaBox = document.getElementById("tamper-sisa-today");
+        if (sisaBox) sisaBox.textContent = window._tamperSisaToday || "";
+      }
+    }, 0);
+    // Hide Status Tgl BAPP dropdown in sticky form, but keep in DOM for tagging
+    formHtml +=
+      `<div style="display:none;" data-tagging="hidden-by-script">` +
+      createDropdownHtml("ket_tgl_bapp", "Status Tgl BAPP") +
+      `</div>`;
     formHtml += `<div class="sys-form-row sys-hidden" id="box_date_wrapper"><label class="sys-form-label">Input Tanggal BAPP</label><input type="date" class="sys-form-input" id="box_tgl_bapp_input" value="${formState.tgl_manual || ""}"></div>`;
 
-    const fields = [{ name: "geo_tag", label: "Geo Tagging" }, { name: "f_papan_identitas", label: "Papan Identitas" }, { name: "f_box_pic", label: "BOX dan PIC" }, { name: "f_unit", label: "Kelengkapan Unit" }, { name: "spesifikasi_dxdiag", label: "Spek Dxdiag" }, { name: "bc_bapp_sn", label: "Barcode SN BAPP" }];
-    fields.forEach((f) => { formHtml += createDropdownHtml(f.name, f.label); });
+    // Hide Geo Tagging dropdown in sticky form, but keep in DOM for tagging
+    formHtml +=
+      `<div style="display:none;" data-tagging="hidden-by-script">` +
+      createDropdownHtml("geo_tag", "Geo Tagging") +
+      `</div>`;
+    const fields = [
+      { name: "f_papan_identitas", label: "Papan Identitas" },
+      { name: "f_box_pic", label: "BOX dan PIC" },
+      { name: "f_unit", label: "Kelengkapan Unit" },
+      { name: "spesifikasi_dxdiag", label: "Spek Dxdiag" },
+      { name: "bc_bapp_sn", label: "Barcode SN BAPP" },
+    ];
+    fields.forEach((f) => {
+      formHtml += createDropdownHtml(f.name, f.label);
+    });
     formHtml += `<div class="sys-form-row"><label class="sys-form-label">Input SN (Manual)</label><input type="text" class="sys-form-input" id="box_sn_bapp_input" placeholder="Ketik SN di sini..." style="text-transform:uppercase;" value="${formState.sn_manual || ""}"></div>`;
 
-    const fields2 = [{ name: "bapp_hal1", label: "BAPP Hal 1" }, { name: "bapp_hal2", label: "BAPP Hal 2" }, { name: "nm_ttd_bapp", label: "Tanda Tangan" }, { name: "stempel", label: "Stempel" }];
-    fields2.forEach((f) => { formHtml += createDropdownHtml(f.name, f.label); });
+    const fields2 = [
+      { name: "bapp_hal1", label: "BAPP Hal 1" },
+      { name: "bapp_hal2", label: "BAPP Hal 2" },
+      { name: "nm_ttd_bapp", label: "Tanda Tangan" },
+      { name: "stempel", label: "Stempel" },
+    ];
+    fields2.forEach((f) => {
+      formHtml += createDropdownHtml(f.name, f.label);
+    });
 
     rightBox.innerHTML = formHtml;
     viewerContainer.appendChild(rightBox);
 
-    const btnToggleMini = rightBox.querySelector("#sys-btn-toggle-confirm-mini");
+    const btnToggleMini = rightBox.querySelector(
+      "#sys-btn-toggle-confirm-mini",
+    );
     if (btnToggleMini) {
       btnToggleMini.onclick = function (e) {
         e.stopPropagation();
         confirmationEnabled = !confirmationEnabled;
         localStorage.setItem("sys_confirm_enabled", confirmationEnabled);
         const iconMini = this.querySelector("#confirm-icon-mini");
-        if (confirmationEnabled) { this.className = "sys-toggle-mini enabled"; if(iconMini) iconMini.textContent="🔔"; }
-        else { this.className = "sys-toggle-mini disabled"; if(iconMini) iconMini.textContent="🔕"; }
+        if (confirmationEnabled) {
+          this.className = "sys-toggle-mini enabled";
+          if (iconMini) iconMini.textContent = "🔔";
+        } else {
+          this.className = "sys-toggle-mini disabled";
+          if (iconMini) iconMini.textContent = "🔕";
+        }
         const mainBtn = document.getElementById("sys-btn-toggle-confirm");
-        if(mainBtn) {
-             const icon = document.getElementById("confirm-icon");
-             const text = document.getElementById("confirm-text");
-             if (confirmationEnabled) { mainBtn.className="sys-btn-toggle-confirm enabled"; if(icon) icon.textContent="🔔"; if(text) text.textContent="Konfirmasi ON"; }
-             else { mainBtn.className="sys-btn-toggle-confirm disabled"; if(icon) icon.textContent="🔕"; if(text) text.textContent="Konfirmasi OFF"; }
+        if (mainBtn) {
+          const icon = document.getElementById("confirm-icon");
+          const text = document.getElementById("confirm-text");
+          if (confirmationEnabled) {
+            mainBtn.className = "sys-btn-toggle-confirm enabled";
+            if (icon) icon.textContent = "🔔";
+            if (text) text.textContent = "Konfirmasi ON";
+          } else {
+            mainBtn.className = "sys-btn-toggle-confirm disabled";
+            if (icon) icon.textContent = "🔕";
+            if (text) text.textContent = "Konfirmasi OFF";
+          }
         }
       };
     }
@@ -1280,13 +1388,17 @@
   }
 
   function setupSyncLogic(boxElement) {
-    const pageJQuery = typeof unsafeWindow !== "undefined" && unsafeWindow.jQuery ? unsafeWindow.jQuery : null;
+    const pageJQuery =
+      typeof unsafeWindow !== "undefined" && unsafeWindow.jQuery
+        ? unsafeWindow.jQuery
+        : null;
     const stickySelects = boxElement.querySelectorAll("select");
 
     stickySelects.forEach((select) => {
       const tName = select.getAttribute("data-target");
       if (tName === "ket_tgl_bapp") handleDateVisibility(select.value);
-      if (select.value === "" && !formState.dropdowns[tName]) setBestDefault(select);
+      if (select.value === "" && !formState.dropdowns[tName])
+        setBestDefault(select);
 
       select.addEventListener("change", function () {
         const val = this.value;
@@ -1305,7 +1417,9 @@
     const snReal = document.getElementById("sn_bapp");
     if (snBox && snReal) {
       if (formState.sn_manual) snReal.value = formState.sn_manual;
-      snBox.addEventListener("click", function () { this.focus(); });
+      snBox.addEventListener("click", function () {
+        this.focus();
+      });
       snBox.addEventListener("input", function () {
         formState.sn_manual = this.value.toUpperCase();
         snReal.value = this.value.toUpperCase();
@@ -1368,6 +1482,16 @@
     html += `<select class="sys-form-select" data-target="${targetName}">`;
     const savedVal = formState.dropdowns[targetName];
     Array.from(originalSelect.options).forEach((opt) => {
+      // Remove 'Tidak terlihat jelas' for f_unit and f_papan_identitas
+      if (
+        (targetName === "f_unit" ||
+          targetName === "f_papan_identitas" ||
+          targetName === "spesifikasi_dxdiag") &&
+        opt.text &&
+        opt.text.toLowerCase().includes("tidak terlihat jelas")
+      ) {
+        return;
+      }
       if (opt.value) {
         let isSelected = "";
         if (savedVal !== undefined) {
@@ -1488,5 +1612,69 @@
         formState.sn_manual = pageData.snPenyedia;
       }
     }
+  }
+})();
+
+// --- TAMBAHAN: Fetch data Sisa hari ini dari /beranda dan console.log ---
+(async function () {
+  try {
+    const res = await fetch("https://laptop.asshal.tech/beranda", {
+      credentials: "include",
+    });
+    const html = await res.text();
+    // Buat DOM parser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    // Cari semua blok tanggal
+    const blocks = doc.querySelectorAll(".program-widget-bc .col-lg-3");
+    let today = new Date();
+    // Format tanggal: 07 Jan 2026
+    const pad = (n) => n.toString().padStart(2, "0");
+    const bulan = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "Mei",
+      "Jun",
+      "Jul",
+      "Agu",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Des",
+    ];
+    const todayStr =
+      pad(today.getDate()) +
+      " " +
+      bulan[today.getMonth()] +
+      " " +
+      today.getFullYear();
+    let found = false;
+    blocks.forEach((block) => {
+      const tgl = block.querySelector("h4")?.innerText.trim();
+      if (tgl === todayStr) {
+        const sisaLi = Array.from(block.querySelectorAll("li")).find((li) =>
+          li.innerText.startsWith("Sisa"),
+        );
+        if (sisaLi) {
+          const val = sisaLi.querySelector("span")?.innerText.trim();
+          // Tampilkan angka Sisa di kiri tulisan Form Evaluasi
+          window._tamperSisaToday = val;
+          const sisaBox = document.getElementById("tamper-sisa-today");
+          if (sisaBox) sisaBox.textContent = val;
+          found = true;
+        }
+      }
+    });
+    if (!found) {
+      window._tamperSisaToday = "";
+      const sisaBox = document.getElementById("tamper-sisa-today");
+      if (sisaBox) sisaBox.textContent = "";
+    }
+  } catch (e) {
+    window._tamperSisaToday = "";
+    const sisaBox = document.getElementById("tamper-sisa-today");
+    if (sisaBox) sisaBox.textContent = "";
   }
 })();
