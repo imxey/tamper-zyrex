@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Fast Search & Click PROSES + Auto Return (Auto Next Page)
+// @name         Fast Search & Click PROSES + Auto Return (Turbo Fetch Mode)
 // @namespace    http://tampermonkey.net/
-// @version      4.2
-// @description  Filter "PROSES", Click, Auto Return, & Auto Next Page if Stuck
+// @version      5.0
+// @description  Filter "PROSES", Click, & Turbo Jump from View Form using Fetch
 // @author       Xeyla
 // @match        https://laptop.asshal.tech/proses*
 // @match        https://laptop.asshal.tech/view_form/*
@@ -15,18 +15,75 @@
   const currentUrl = window.location.href;
 
   if (currentUrl.includes("/view_form/")) {
-    console.log(
-      "Terdeteksi di halaman View Form, bye-bye~ Balik ke Verifikasi...",
-    );
-    setTimeout(() => {
-      window.location.href = "https://laptop.asshal.tech/proses";
-    }, 500);
+    let currentNPSN = "";
+    const strongTag = document.querySelector("strong");
+    if (strongTag) {
+      const text = strongTag.innerText || "";
+      currentNPSN = text.split("-")[0].trim();
+    }
+
+    fetch("https://laptop.asshal.tech/proses?limit=50")
+      .then((response) => response.text())
+      .then((html) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        let hold = [];
+        try {
+          const raw = localStorage.getItem("hold");
+          hold = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          hold = [];
+        }
+
+        const rows = doc.querySelectorAll("#table tbody tr");
+
+        let targetFound = false;
+
+        for (let i = 0; i < rows.length; i++) {
+          const tds = rows[i].querySelectorAll("td");
+          if (tds.length < 9) continue;
+
+          const rowNPSN = tds[6].innerText.trim();
+
+          const actionHTML = tds[8].innerHTML;
+
+          if (rowNPSN === currentNPSN) {
+            continue;
+          }
+
+          if (hold.includes(rowNPSN)) {
+            continue;
+          }
+
+          if (actionHTML.includes("PROSES") && actionHTML.includes("href=")) {
+            const linkMatch = actionHTML.match(/href="([^"]*)"/);
+            if (linkMatch && linkMatch[1]) {
+              const targetUrl = linkMatch[1];
+
+              targetFound = true;
+
+              window.location.href = targetUrl;
+              return;
+            }
+          }
+        }
+
+        if (!targetFound) {
+          window.location.href = "https://laptop.asshal.tech/proses";
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Gagal fetch data:", err);
+
+        window.location.href = "https://laptop.asshal.tech/proses";
+      });
+
     return;
   }
 
   if (currentUrl.includes("/proses")) {
     const waitLoad = setInterval(() => {
-      //
       if (
         typeof unsafeWindow.jQuery !== "undefined" &&
         unsafeWindow.jQuery("#table").length
@@ -40,8 +97,6 @@
   function satSetWatWet() {
     const $ = unsafeWindow.jQuery;
     const $table = $("#table");
-
-    console.log("Table ready! Lagi nyari target nih...");
 
     setTimeout(() => {
       let hold = [];
@@ -87,38 +142,11 @@
           "font-weight": "bold",
           color: "white",
         });
-        console.log("Ketemu! Clicking PROSES...");
         chosenBtn[0].click();
       } else {
-        // Cek jika di halaman 1 dan tidak ada PROSES, langsung next page
-        const $activePage = $(".pagination .page-number.active");
-        const isFirstPage =
-          $activePage.length > 0 && $activePage.text().trim() === "1";
-        if (isFirstPage) {
-          console.log("Halaman 1 kosong, auto next ke halaman 2...");
-          const $nextPageLi = $(".pagination .page-next");
-          const $nextPageLink = $nextPageLi.find("a");
-          if ($nextPageLink.length > 0 && !$nextPageLi.hasClass("disabled")) {
-            $nextPageLink
-              .css({
-                "background-color": "#00d2d3",
-                color: "white",
-                "font-weight": "bold",
-              })
-              .text("NEXT ➡");
-            $nextPageLink[0].click();
-            setTimeout(() => {
-              satSetWatWet();
-            }, 2000);
-            return;
-          }
-        }
-        // Default: log dan next page jika ada, atau mentok
-        console.log(
-          "Duh, gak ada tombol PROSES di page ini. Coba cek page sebelah ya...",
-        );
         const $nextPageLi = $(".pagination .page-next");
         const $nextPageLink = $nextPageLi.find("a");
+
         if ($nextPageLink.length > 0 && !$nextPageLi.hasClass("disabled")) {
           $nextPageLink
             .css({
@@ -127,15 +155,11 @@
               "font-weight": "bold",
             })
             .text("NEXT ➡");
-          console.log("Gas ke Page berikutnya! ✈️");
           $nextPageLink[0].click();
           setTimeout(() => {
             satSetWatWet();
           }, 2000);
         } else {
-          console.log(
-            "Yah, udah mentok beb. Gak ada page lagi atau tombolnya disabled. 😢",
-          );
         }
       }
     }, 800);
