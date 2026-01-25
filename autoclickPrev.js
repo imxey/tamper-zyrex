@@ -1,17 +1,35 @@
 // ==UserScript==
-// @name         Fast Search & Click PROSES (Turbo Reverse + Auto Prev Page)
+// @name         Fast Search & Click PROSES (Turbo Reverse + Queue + Auto Page)
 // @namespace    http://tampermonkey.net/
-// @version      8.0
-// @description  Turbo Fetch (Background Scan) + Reverse Logic (Akhir ke Awal) + Auto Previous Page
-// @author
+// @version      9.0
+// @description  Turbo Queue + Reverse Scan + Auto Refill + Skip Button
+// @author       Xeyla
 // @match        https://laptop.asshal.tech/proses*
 // @match        https://laptop.asshal.tech/view_form/*
 // @grant        unsafeWindow
 // ==/UserScript==
+
 (function () {
   "use strict";
 
   const currentUrl = window.location.href;
+  const STORAGE_KEY_HOLD = "hold";
+  const STORAGE_KEY_QUEUE = "process_queue";
+  const STORAGE_KEY_PAGE = "last_active_page";
+
+  function getStorage(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
 
   if (currentUrl.includes("/view_form/")) {
     let currentNPSN = "";
@@ -20,9 +38,26 @@
       currentNPSN = strongTag.innerText.split("-")[0].trim();
     }
 
+    if (currentNPSN) {
+      const hold = getStorage(STORAGE_KEY_HOLD);
+      if (!hold.includes(currentNPSN)) {
+        hold.push(currentNPSN);
+        saveStorage(STORAGE_KEY_HOLD, hold);
+      }
+    }
+
+    const queue = getStorage(STORAGE_KEY_QUEUE);
+
+    if (queue.length > 0) {
+      const nextUrl = queue.shift();
+      saveStorage(STORAGE_KEY_QUEUE, queue);
+      window.location.href = nextUrl;
+      return;
+    }
+
     let lastPage = 1;
     try {
-      lastPage = localStorage.getItem("last_active_page") || 1;
+      lastPage = localStorage.getItem(STORAGE_KEY_PAGE) || 1;
     } catch (e) {}
 
     fetch(`https://laptop.asshal.tech/proses?page=${lastPage}&limit=50`)
@@ -30,19 +65,10 @@
       .then((html) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
-
-        let hold = [];
-        try {
-          hold = JSON.parse(localStorage.getItem("hold")) || [];
-        } catch {
-          hold = [];
-        }
-
+        const hold = getStorage(STORAGE_KEY_HOLD);
         const rows = Array.from(doc.querySelectorAll("#table tbody tr"));
-
         const reversedRows = rows.reverse();
-
-        let targetFound = false;
+        const newQueue = [];
 
         for (let tr of reversedRows) {
           const tds = tr.querySelectorAll("td");
@@ -52,28 +78,25 @@
           const actionHTML = tds[8].innerHTML;
 
           if (rowNPSN === currentNPSN) continue;
-
-          if (hold.includes(rowNPSN)) {
-            continue;
-          }
+          if (hold.includes(rowNPSN)) continue;
 
           if (actionHTML.includes("PROSES") && actionHTML.includes("href=")) {
             const linkMatch = actionHTML.match(/href="([^"]*)"/);
             if (linkMatch && linkMatch[1]) {
-              const targetUrl = linkMatch[1];
-
-              targetFound = true;
-              window.location.href = targetUrl;
-              return;
+              newQueue.push(linkMatch[1]);
             }
           }
         }
 
-        if (!targetFound) {
+        if (newQueue.length > 0) {
+          const nextUrl = newQueue.shift();
+          saveStorage(STORAGE_KEY_QUEUE, newQueue);
+          window.location.href = nextUrl;
+        } else {
           window.location.href = "https://laptop.asshal.tech/proses";
         }
       })
-      .catch((err) => {
+      .catch(() => {
         window.location.href = "https://laptop.asshal.tech/proses";
       });
 
@@ -108,12 +131,11 @@
       const totalPages = options.totalPages;
       const currentPage = options.pageNumber;
 
-      localStorage.setItem("last_active_page", currentPage);
+      localStorage.setItem(STORAGE_KEY_PAGE, currentPage);
 
       if (totalPages > 1 && currentPage === 1) {
         $table.bootstrapTable("selectPage", totalPages);
-
-        localStorage.setItem("last_active_page", totalPages);
+        localStorage.setItem(STORAGE_KEY_PAGE, totalPages);
         setTimeout(scanAndClickBottomUp, 2000);
       } else {
         scanAndClickBottomUp();
@@ -124,54 +146,58 @@
       const options = $table.bootstrapTable("getOptions");
       const currentPage = options.pageNumber;
 
-      localStorage.setItem("last_active_page", currentPage);
+      localStorage.setItem(STORAGE_KEY_PAGE, currentPage);
 
-      let hold = [];
-      try {
-        hold = JSON.parse(localStorage.getItem("hold")) || [];
-      } catch {
-        hold = [];
-      }
-
-      const $ths = $table.find("thead th");
-      const npsnIdx = $ths.index($ths.filter('[data-field="npsn"]').first());
-
-      const rows = $table.find("tbody tr:visible").get().reverse();
+      const hold = getStorage(STORAGE_KEY_HOLD);
+      const queue = [];
+      const $rows = $table.find("tbody tr:visible").get().reverse();
 
       let chosenBtn = null;
       let chosenNpsn = "";
+      let firstUrl = "";
 
-      for (let tr of rows) {
+      for (let tr of $rows) {
         const $tr = $(tr);
-        const $btn = $tr
-          .find("button.btn-warning")
-          .filter((i, el) => $(el).text().trim() === "PROSES");
+        const $tds = $tr.find("td");
+        if ($tds.length < 9) continue;
 
-        if ($btn.length === 0) continue;
+        const rowNPSN = $tds.eq(6).text().trim();
+        const $actionTd = $tds.eq(8);
+        const actionHTML = $actionTd.html();
 
-        let npsnText = "";
-        if (npsnIdx >= 0) {
-          npsnText = ($tr.find("td").eq(npsnIdx).text() || "").trim();
+        if (hold.includes(rowNPSN)) continue;
+
+        if (actionHTML.includes("PROSES") && actionHTML.includes("href=")) {
+          const linkMatch = actionHTML.match(/href="([^"]*)"/);
+          if (linkMatch && linkMatch[1]) {
+            const url = linkMatch[1];
+            queue.push(url);
+
+            if (!chosenBtn) {
+              chosenBtn = $tr.find("button.btn-warning").first();
+              chosenNpsn = rowNPSN;
+              firstUrl = url;
+            }
+          }
         }
-
-        if (npsnText && hold.includes(npsnText)) continue;
-
-        chosenBtn = $btn.first();
-        chosenNpsn = npsnText;
-        break;
       }
 
-      if (chosenBtn) {
-        window.__LAST_NPSN__ = chosenNpsn;
+      if (queue.length > 0) {
+        queue.shift();
+        saveStorage(STORAGE_KEY_QUEUE, queue);
 
-        chosenBtn.text("Processing 🚀").css({
-          "background-color": "#ff0055",
-          "border-color": "#ff0055",
-          "font-weight": "bold",
-          color: "white",
-        });
-
-        chosenBtn[0].click();
+        if (chosenBtn) {
+          window.__LAST_NPSN__ = chosenNpsn;
+          chosenBtn.text("Start Queue! 🚀").css({
+            "background-color": "#ff0055",
+            "border-color": "#ff0055",
+            "font-weight": "bold",
+            color: "white",
+          });
+          chosenBtn[0].click();
+        } else {
+          window.location.href = firstUrl;
+        }
       } else {
         if (currentPage > 1) {
           $table.bootstrapTable("prevPage");
@@ -195,10 +221,10 @@
         alert("Belum ada data.");
         return;
       }
-      let hold = JSON.parse(localStorage.getItem("hold")) || [];
+      let hold = getStorage(STORAGE_KEY_HOLD);
       if (!hold.includes(npsn)) {
         hold.push(npsn);
-        localStorage.setItem("hold", JSON.stringify(hold));
+        saveStorage(STORAGE_KEY_HOLD, hold);
       }
       btn.innerText = "SKIPPED! RELOADING...";
       setTimeout(() => location.reload(), 500);
