@@ -111,6 +111,7 @@
     "spesifikasi_dxdiag_Tidak sesuai": "(6A) DxDiag tidak sesuai",
     "spesifikasi_dxdiag_Tidak ada": "(6B) DxDiag tidak ada",
     "spesifikasi_dxdiag_Tidak terlihat jelas": "(6C) DxDiag tidak jelas",
+    "ket_tgl_bapp_Tanggal BAPP dan Web Tidak Sesuai": "(7E) Tanggal BAPP dan Web Tidak Sesuai",
   };
 
   const link = document.createElement("link");
