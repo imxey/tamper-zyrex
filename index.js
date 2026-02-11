@@ -1302,10 +1302,7 @@
       }
     }, 0);
     // Hide Status Tgl BAPP dropdown in sticky form, but keep in DOM for tagging
-    formHtml +=
-      `<div style="display:none;" data-tagging="hidden-by-script">` +
-      createDropdownHtml("ket_tgl_bapp", "Status Tgl BAPP") +
-      `</div>`;
+    formHtml += createDropdownHtml("ket_tgl_bapp", "Status Tgl BAPP");
     formHtml += `<div class="sys-form-row sys-hidden" id="box_date_wrapper"><label class="sys-form-label">Input Tanggal BAPP</label><input type="date" class="sys-form-input" id="box_tgl_bapp_input" value="${formState.tgl_manual || ""}"></div>`;
 
     // Hide Geo Tagging dropdown in sticky form, but keep in DOM for tagging
@@ -1451,7 +1448,6 @@
         const val = this.value;
         formState.dropdowns[tName] = val;
         syncDropdown(tName, val, pageJQuery);
-        if (tName === "ket_tgl_bapp") handleDateVisibility(val);
         if (tName === "bc_bapp_sn") handleSNLogic(val);
         cascadeDropdownChanges(tName, val, pageJQuery);
 
